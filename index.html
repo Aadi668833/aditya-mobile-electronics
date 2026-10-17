@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aditya Mobile &amp; Electronics, Siwan</title>
+<meta name="description" content="Mobile phones, accessories and electronics in Srinagar, Siwan, Bihar. Near SBI Bank.">
+<style>
+:root{--y:#FFC400;--k:#000;--c:#141414;--l:#2c2c2c;--t:#f5f5f5;--m:#a3a3a3}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--k);color:var(--t);font:16px/1.5 "Segoe UI",system-ui,sans-serif}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--y);outline-offset:2px}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 5vw;background:var(--k);border-bottom:3px solid var(--y);position:sticky;top:0;z-index:5}
+.logo{font-weight:800;font-size:1.15rem;text-decoration:none}
+.logo b{color:var(--y)}
+.btn{display:inline-block;background:var(--y);color:#000;font-weight:700;padding:10px 18px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;font-size:1rem}
+.btn.o{background:none;color:var(--y);border:2px solid var(--y)}
+.hero{padding:9vh 5vw 6vh;max-width:900px}
+.hero h1{font-size:clamp(2rem,6vw,3.6rem);line-height:1.08;margin:0 0 14px;letter-spacing:-.02em}
+.hero h1 span{background:var(--y);color:#000;padding:0 .2em}
+.hero p{color:var(--m);max-width:55ch}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+section{padding:28px 5vw}
+h2{margin:0 0 14px;font-size:1.5rem}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+input,select{background:var(--c);color:var(--t);border:1px solid var(--l);border-radius:10px;padding:10px 12px;font:inherit}
+input{flex:1;min-width:200px}
+.chips button{background:var(--c);color:var(--t);border:1px solid var(--l);border-radius:999px;padding:8px 14px;cursor:pointer;font:inherit}
+.chips button.on{background:var(--y);color:#000;border-color:var(--y);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.card{background:var(--c);border:1px solid var(--l);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.img{aspect-ratio:4/3;background:#222;display:grid;place-items:center;font-size:2.5rem;color:var(--l)}
+.img img{width:100%;height:100%;object-fit:cover}
+.bd{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.bd h3{margin:0;font-size:1.02rem}
+.sp{color:var(--m);font-size:.88rem;white-space:pre-line}
+.pr{font-size:1.3rem;font-weight:800;color:var(--y)}
+.tag{font-size:.8rem}
+.in{color:#7ddc7d}
+.no{color:#ff8a7a}
+.bd .btn{margin-top:auto;text-align:center;padding:9px}
+.bd .btn[aria-disabled=true]{opacity:.5}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.info div{background:var(--c);border-left:4px solid var(--y);padding:14px 16px;border-radius:8px}
+footer{padding:22px 5vw;border-top:1px solid var(--l);color:var(--m);font-size:.9rem}
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="#">Aditya <b>Mobile</b> &amp; Electronics</a>
+  <a class="btn" id="wa0" target="_blank" rel="noopener">WhatsApp us</a>
+</header>
+
+<div class="hero">
+  <h1>Phones, accessories and electronics in <span>Siwan</span></h1>
+  <p>Browse what is in the shop right now. Found something you like? Message us on WhatsApp to confirm and reserve it.</p>
+  <div class="row">
+    <a class="btn" href="#shop">See products</a>
+    <a class="btn o" href="#visit">Find the shop</a>
+  </div>
+</div>
+
+<section id="shop">
+  <h2>Our products</h2>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Search by name, brand or model" aria-label="Search products">
+    <select id="av" aria-label="Availability">
+      <option value="">All items</option>
+      <option value="1">In stock only</option>
+    </select>
+  </div>
+  <div class="chips tools" id="cats"></div>
+  <div class="grid" id="grid" aria-live="polite"><p>Loading products…</p></div>
+</section>
+
+<section id="visit">
+  <h2>Visit us</h2>
+  <div class="info">
+    <div><b>Address</b><br>Srinagar, Siwan, Bihar, India<br>Near SBI Bank</div>
+    <div><b>Call or WhatsApp</b><br><a href="tel:+918804447173">8804447173</a></div>
+    <div><b>Instagram</b><br><a href="https://instagram.com/adityamobile.siwan" target="_blank" rel="noopener">@adityamobile.siwan</a></div>
+  </div>
+</section>
+
+<footer>© Aditya Mobile &amp; Electronics, Siwan. Prices and availability can change; please confirm on WhatsApp.</footer>
+
+<script src="config.js"></script>
+<script>
+"use strict";
+
+const N = "918804447173";
+const $ = selector => document.querySelector(selector);
+const E = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+}[char]));
+
+const wa = message => `https://wa.me/${N}?text=${encodeURIComponent(message)}`;
+$("#wa0").href = wa("Hello Aditya Mobile & Electronics, I have a question.");
+
+let all = [];
+let cat = "";
+
+const CATS = ["All", "Mobile Phones", "Accessories", "Electronics"];
+$("#cats").innerHTML = CATS.map(category =>
+  `<button type="button" class="${category === "All" ? "on" : ""}" data-c="${E(category)}">${E(category)}</button>`
+).join("");
+
+$("#cats").onclick = event => {
+  const button = event.target.closest("button");
+  if (!button) return;
+  cat = button.dataset.c === "All" ? "" : button.dataset.c;
+  document.querySelectorAll("#cats button").forEach(item =>
+    item.classList.toggle("on", item === button)
+  );
+  draw();
+};
+
+$("#q").oninput = draw;
+$("#av").onchange = draw;
+
+function draw() {
+  const query = $("#q").value.toLowerCase().trim();
+  const inStockOnly = $("#av").value === "1";
+
+  const results = all.filter(product =>
+    (!cat || product.category === cat) &&
+    (!inStockOnly || product.in_stock) &&
+    [product.name, product.brand, product.model].join(" ").toLowerCase().includes(query)
+  );
+
+  $("#grid").innerHTML = results.map(product => `
+    <article class="card">
+      <div class="img">
+        ${product.image_url
+          ? `<img loading="lazy" src="${E(product.image_url)}" alt="${E(product.name)}">`
+          : "📱"}
+      </div>
+      <div class="bd">
+        <h3>${E(product.name)}</h3>
+        <div class="sp">${E(product.specs || product.description || "")}</div>
+        <div class="pr">₹${Number(product.price).toLocaleString("en-IN")}</div>
+        <div class="tag ${product.in_stock ? "in" : "no"}">
+          ${product.in_stock ? "● In stock" : "● Sold out"}
+        </div>
+        <a class="btn" target="_blank" rel="noopener"
+           href="${wa(`Hello, I am interested in ${product.name} (₹${product.price}). Is it available?`)}">
+          Ask on WhatsApp
+        </a>
+      </div>
+    </article>
+  `).join("") || "<p>No products match. Try another search, or message us on WhatsApp.</p>";
+}
+
+
+async function loadProducts() {
+  if (!window.CFG || !CFG.url || !CFG.key) {
+    console.error("Supabase config missing. Check config.js");
+    document.querySelector("#grid").textContent =
+      "Configuration error. Please check config.js.";
+    return;
+  }
+
+  try {
+    const url =
+      `${CFG.url.replace(/\/+$/, "")}/rest/v1/public_products?select=*&order=name`;
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        apikey: CFG.key,
+        Authorization: `Bearer ${CFG.key}`
+      }
+    });
+
+    const body = await response.text();
+
+    if (!response.ok) {
+      console.error("Supabase error:", response.status, body);
+      document.querySelector("#grid").textContent =
+        `Products failed to load: HTTP ${response.status}`;
+      return;
+    }
+
+    const data = JSON.parse(body);
+
+    if (!Array.isArray(data)) {
+      throw new Error("Supabase response is not a product array");
+    }
+
+    all = data.map(product => ({
+      ...product,
+      in_stock: typeof product.in_stock === "boolean"
+        ? product.in_stock
+        : Number(product.qty ?? 0) > 0
+    }));
+
+    console.log("Products received:", all);
+    console.log("Number of products:", all.length);
+    draw();
+
+  } catch (error) {
+    console.error("Product loading error:", error);
+    document.querySelector("#grid").textContent =
+      "Products could not load. Check Console for details.";
+  }
+}
+
+loadProducts();
+</script>
+</body>
+</html>

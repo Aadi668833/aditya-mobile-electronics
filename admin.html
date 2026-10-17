@@ -1,0 +1,116 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
+<title>Admin | Aditya Mobile</title>
+<style>
+:root{--y:#FFC400;--c:#141414;--b:#2c2c2c;--t:#f5f5f5;--m:#a3a3a3}
+*{box-sizing:border-box}body{margin:0;background:#000;color:var(--t);font:15px system-ui,"Segoe UI",sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:3px solid var(--y);position:sticky;top:0;background:#000;z-index:5}
+h1{font-size:17px;margin:0;color:var(--y)}h2{margin:6px 0 10px;font-size:18px}nav{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px}
+button,select,input,textarea{font:inherit;color:var(--t);background:#222;border:1px solid var(--b);border-radius:8px;padding:8px 10px}
+button{cursor:pointer}button.p,nav .on{background:var(--y);color:#000;border-color:var(--y);font-weight:700}button.d{border-color:#c0392b;color:#ff8a7a}button:disabled{opacity:.5}
+main{padding:0 14px 40px;max-width:1100px;margin:auto}.card{background:var(--c);border:1px solid var(--b);border-radius:10px;padding:14px;margin:10px 0}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.s{margin:0}.s b{display:block;font-size:20px;color:var(--y)}.s span{color:var(--m);font-size:12px}
+.f{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;align-items:end}label{display:block;font-size:12px;color:var(--m)}label input,label select,label textarea{width:100%}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:7px;border-bottom:1px solid var(--b);white-space:nowrap}th{color:var(--m);font-size:12px}
+#msg{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);padding:10px 16px;border-radius:8px;z-index:9;color:#000;max-width:92vw}.ok{background:var(--y)}.bad{background:#ff8a7a}
+.bar{height:8px;background:var(--y);border-radius:4px;margin:2px 0 8px}.low{color:#ffb020}.out{color:#ff8a7a}[hidden]{display:none!important}#login{max-width:340px;margin:12vh auto;padding:0 14px}#login input{width:100%;margin:6px 0}
+</style></head><body>
+<div id="msg" role="status" hidden></div>
+<div id="login"><h1>Aditya Mobile: Admin</h1><div class="card"><form id="lf"><label>Email<input id="em" type="email" required autocomplete="username"></label><label>Password<input id="pw" type="password" required autocomplete="current-password"></label><br><button class="p" style="width:100%;margin-top:8px">Log in</button></form></div></div>
+<div id="app" hidden>
+<header><h1>Aditya Mobile &amp; Electronics</h1><button id="out">Log out</button></header>
+<nav><button data-t="dash">Dashboard</button><button data-t="prod">Products</button><button data-t="buy">Purchases</button><button data-t="sell">New sale</button><button data-t="sales">Sales &amp; bills</button></nav>
+<main>
+<section id="t-dash"><div class="f"><label>Period<select id="per"><option value="today">Today</option><option value="week">Last 7 days</option><option value="month" selected>This month</option><option value="year">This year</option><option value="all">All time</option></select></label><div><button id="csv">Download sales report (CSV)</button></div></div>
+<div class="g" id="stats"></div>
+<div class="card"><h2>Stock alerts</h2><div id="alerts"></div></div>
+<div class="card"><h2>Best sellers</h2><div id="top"></div></div>
+<div class="card tw"><h2>Recent sales</h2><table><tbody id="recent"></tbody></table></div></section>
+
+<section id="t-prod" hidden><div class="f"><input id="pq" placeholder="Search name, model, SKU, IMEI" oninput="rP()"><div><button class="p" id="addp">+ Add product</button></div></div>
+<form id="pf" class="card" hidden><input type="hidden" name="pid"><div class="f">
+<label>Name*<input name="name" required></label><label>Brand<input name="brand"></label><label>Model<input name="model"></label>
+<label>Category*<select name="category"><option>Mobile Phones</option><option>Accessories</option><option>Electronics</option></select></label>
+<label>SKU<input name="sku"></label><label>Barcode<input name="barcode"></label><label>IMEI / serial<input name="imei"></label>
+<label>Selling price (₹)*<input name="price" type="number" min="0" step="0.01" required></label><label>Purchase price (₹)<input name="purchase_price" type="number" min="0" step="0.01"></label>
+<label>Opening stock<input name="qty" type="number" min="0" step="1" value="0"></label><label>Low-stock alert at<input name="low_stock" type="number" min="0" value="3"></label>
+<label>Specifications<textarea name="specs" rows="3"></textarea></label><label>Description<textarea name="description" rows="3"></textarea></label>
+<label>Photo (under 2 MB)<input name="img" type="file" accept="image/*"></label><label><input name="listed" type="checkbox" checked style="width:auto"> Show on website</label></div>
+<br><button class="p">Save product</button> <button type="button" onclick="pf.hidden=true">Cancel</button></form>
+<div class="card tw"><table><thead><tr><th>Product</th><th>Price</th><th>Cost</th><th>Stock</th><th></th></tr></thead><tbody id="pt"></tbody></table></div></section>
+
+<section id="t-buy" hidden><form id="bf" class="card"><h2>Record a stock purchase</h2><div class="f">
+<label>Product*<select name="product" id="bp" required></select></label><label>Supplier<input name="supplier"></label><label>Supplier phone<input name="phone"></label>
+<label>Quantity*<input name="qty" type="number" min="1" step="1" required></label><label>Cost per unit (₹)*<input name="cost" type="number" min="0" step="0.01" required></label>
+<label>Date*<input name="date" id="bd" type="date" required></label></div><br><button class="p">Save purchase</button></form>
+<div class="card tw"><h2>Purchase history</h2><table><thead><tr><th>Date</th><th>Product</th><th>Supplier</th><th>Qty</th><th>Total</th></tr></thead><tbody id="bt"></tbody></table></div></section>
+
+<section id="t-sell" hidden><div class="card"><h2>New sale</h2><div class="f"><label>Product<select id="sp"></select></label><label>Qty<input id="sq" type="number" min="1" value="1"></label><div><button id="add">Add to bill</button></div></div></div>
+<div class="card tw"><table><tbody id="cart"></tbody></table><p id="sum"></p>
+<div class="f"><label>Customer name<input id="cn"></label><label>Phone<input id="cp"></label><label>Discount (₹)<input id="disc" type="number" min="0" value="0"></label>
+<label>Amount paid (₹), blank = full<input id="paid" type="number" min="0"></label><label>Payment method<select id="pm"><option>Cash</option><option>UPI</option><option>Card</option><option>Other</option></select></label></div><br>
+<button class="p" id="sell">Complete sale &amp; open bill</button></div></section>
+
+<section id="t-sales" hidden><div class="card tw"><table><thead><tr><th>Invoice</th><th>Date</th><th>Customer</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody id="st"></tbody></table></div></section>
+</main></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
+const sb=supabase.createClient(CFG.url,CFG.key),$=s=>document.querySelector(s),pf=$("#pf"),M=n=>"₹"+Number(n||0).toLocaleString("en-IN"),D=d=>new Date(d).toLocaleDateString("en-IN"),
+E=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let P=[],S=[],cart=[],key=crypto.randomUUID(),bkey=crypto.randomUUID();
+function msg(t,bad){const e=$("#msg");e.textContent=t;e.className=bad?"bad":"ok";e.hidden=false;clearTimeout(msg.t);msg.t=setTimeout(()=>e.hidden=true,5000)}
+const err=e=>msg((e&&e.message)||"Something went wrong. Please try again.",1);
+function tab(n){document.querySelectorAll("main>section").forEach(s=>s.hidden=s.id!="t-"+n);document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==n))}
+document.querySelector("nav").onclick=e=>e.target.dataset.t&&tab(e.target.dataset.t);
+async function enter(){const{data,error}=await sb.rpc("is_admin");if(error||!data){await sb.auth.signOut();return false}$("#login").hidden=true;$("#app").hidden=false;$("#bd").valueAsDate=new Date();await load();tab("dash");return true}
+$("#lf").onsubmit=async e=>{e.preventDefault();const{error}=await sb.auth.signInWithPassword({email:$("#em").value.trim(),password:$("#pw").value});if(error)return msg("Wrong email or password.",1);if(!await enter())msg("This account does not have admin access.",1)};
+$("#out").onclick=async()=>{await sb.auth.signOut();location.reload()};
+sb.auth.getSession().then(({data})=>data.session&&enter());
+async function load(){const[a,b]=await Promise.all([sb.from("products").select("*").order("name"),sb.from("sales").select("*,sale_items(*)").order("created_at",{ascending:false}).limit(2000)]);
+if(a.error||b.error)return err(a.error||b.error);P=a.data;S=b.data;rP();rSel();rS();rD();rB()}
+// ---------- dashboard
+function from(p){const d=new Date();d.setHours(0,0,0,0);if(p=="week")d.setDate(d.getDate()-6);if(p=="month")d.setDate(1);if(p=="year")d.setMonth(0,1);return p=="all"?new Date(0):d}
+const inPer=()=>S.filter(s=>new Date(s.created_at)>=from($("#per").value));
+async function rD(){const f=from($("#per").value),ss=inPer(),pu=await sb.from("purchases").select("total").gte("created_at",f.toISOString());
+const sales=ss.reduce((a,s)=>a+ +s.total,0),profit=ss.reduce((a,s)=>a+s.sale_items.reduce((x,i)=>x+(i.price-i.cost)*i.qty,0)-s.discount,0),buy=(pu.data||[]).reduce((a,r)=>a+ +r.total,0),
+low=P.filter(p=>p.qty>0&&p.qty<=p.low_stock),out=P.filter(p=>p.qty==0),cnt={};
+ss.forEach(s=>s.sale_items.forEach(i=>cnt[i.name]=(cnt[i.name]||0)+i.qty));const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,5),mx=top[0]?top[0][1]:1;
+$("#stats").innerHTML=[["Sales",M(sales)],["Estimated profit",M(profit)],["Purchases",M(buy)],["Stock value (at cost)",M(P.reduce((a,p)=>a+p.qty*p.purchase_price,0))],["Products",P.length],["Units in stock",P.reduce((a,p)=>a+p.qty,0)],["Low stock",low.length],["Out of stock",out.length]].map(([l,v])=>`<div class="card s"><b>${v}</b><span>${l}</span></div>`).join("");
+$("#alerts").innerHTML=out.map(p=>`<div class="out">Out of stock: ${E(p.name)}</div>`).concat(low.map(p=>`<div class="low">Low: ${E(p.name)} (${p.qty} left)</div>`)).join("")||"All stock levels are fine.";
+$("#top").innerHTML=top.map(([n,q])=>`<div>${E(n)}: ${q} sold<div class="bar" style="width:${q/mx*100}%"></div></div>`).join("")||"No sales in this period.";
+$("#recent").innerHTML=ss.slice(0,8).map(s=>`<tr><td>${s.invoice_no}</td><td>${D(s.created_at)}</td><td>${E(s.customer_name||"Walk-in")}</td><td>${M(s.total)}</td></tr>`).join("")}
+$("#per").onchange=rD;
+$("#csv").onclick=()=>{const r=[["Invoice","Date","Customer","Subtotal","Discount","Total","Paid","Method"],...inPer().map(s=>[s.invoice_no,D(s.created_at),s.customer_name||"",s.subtotal,s.discount,s.total,s.paid,s.method])];
+const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([r.map(x=>x.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n")],{type:"text/csv"}));a.download="sales-report.csv";a.click()};
+// ---------- products
+function rP(){const q=$("#pq").value.toLowerCase();$("#pt").innerHTML=P.filter(p=>[p.name,p.brand,p.model,p.sku,p.imei,p.barcode].join(" ").toLowerCase().includes(q)).map(p=>`<tr><td>${E(p.name)}<br><small>${E(p.category)}${p.imei?" · IMEI "+E(p.imei):""}${p.listed?"":" · hidden"}</small></td><td>${M(p.price)}</td><td>${M(p.purchase_price)}</td><td class="${p.qty==0?"out":p.qty<=p.low_stock?"low":""}">${p.qty}</td><td><button onclick="ed('${p.id}')">Edit</button> <button onclick="adj('${p.id}')">Stock</button> <button class="d" onclick="del('${p.id}')">Delete</button></td></tr>`).join("")||"<tr><td>No products yet. Press “Add product”.</td></tr>"}
+function rSel(){$("#bp").innerHTML=P.map(p=>`<option value="${p.id}">${E(p.name)}</option>`).join("");$("#sp").innerHTML=P.filter(p=>p.qty>0).map(p=>`<option value="${p.id}">${E(p.name)} (${p.qty} left, ${M(p.price)})</option>`).join("")}
+$("#addp").onclick=()=>{pf.reset();pf.pid.value="";pf.qty.parentElement.hidden=false;pf.hidden=false;pf.name.focus()};
+function ed(id){const p=P.find(x=>x.id==id);pf.reset();for(const k in p){const el=pf.elements[k];if(el&&el.type!="file"&&el.type!="checkbox")el.value=p[k]??""}pf.listed.checked=p.listed;pf.pid.value=id;pf.qty.parentElement.hidden=true;pf.hidden=false;pf.scrollIntoView()}
+pf.onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;try{const f=new FormData(pf),r={};for(const[k,v]of f.entries())if(k!="img")r[k]=v;
+const id=r.pid;delete r.pid;["price","purchase_price","low_stock","qty"].forEach(k=>r[k]=Number(r[k]||0));["sku","barcode","imei","brand","model"].forEach(k=>r[k]=r[k]||null);r.listed=pf.listed.checked;if(id)delete r.qty;
+const file=f.get("img");if(file&&file.size){if(file.size>2e6)throw Error("Photo must be under 2 MB.");const path=crypto.randomUUID()+"."+(file.name.split(".").pop()||"jpg").toLowerCase();const u=await sb.storage.from("product-images").upload(path,file);if(u.error)throw u.error;r.image_url=sb.storage.from("product-images").getPublicUrl(path).data.publicUrl}
+const{error}=await(id?sb.from("products").update(r).eq("id",id):sb.from("products").insert(r));if(error)throw error;msg("Product saved.");pf.hidden=true;await load()}catch(x){err(x.code=="23505"?Error("That SKU already exists."):x)}b.disabled=false};
+async function del(id){if(!confirm("Delete this product?"))return;const{error}=await sb.from("products").delete().eq("id",id);if(error)return msg(error.code=="23503"?"This product has sales or purchase history, so it cannot be deleted. Untick “Show on website” instead.":error.message,1);msg("Product deleted.");load()}
+async function adj(id){const p=P.find(x=>x.id==id),n=prompt(`New stock count for ${p.name} (now ${p.qty}):`);if(n===null)return;const r=prompt("Reason for this correction (required):");if(r===null)return;const{error}=await sb.rpc("adjust_stock",{p_product:id,p_qty:parseInt(n),p_reason:r});if(error)return err(error);msg("Stock updated.");load()}
+// ---------- purchases
+$("#bf").onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;const f=Object.fromEntries(new FormData(e.target));
+const{error}=await sb.rpc("record_purchase",{p_product:f.product,p_supplier:f.supplier,p_phone:f.phone,p_qty:parseInt(f.qty),p_cost:+f.cost,p_date:f.date,p_key:bkey});b.disabled=false;if(error)return err(error);
+bkey=crypto.randomUUID();e.target.reset();$("#bd").valueAsDate=new Date();msg("Purchase saved. Stock increased.");load()};
+async function rB(){const{data}=await sb.from("purchases").select("*,products(name),suppliers(name,phone)").order("created_at",{ascending:false}).limit(40);
+$("#bt").innerHTML=(data||[]).map(r=>`<tr><td>${D(r.purchase_date)}</td><td>${E(r.products&&r.products.name)}</td><td>${E(r.suppliers?r.suppliers.name+" "+(r.suppliers.phone||""):"")}</td><td>${r.qty}</td><td>${M(r.total)}</td></tr>`).join("")}
+// ---------- sale
+function sub(){return cart.reduce((a,c)=>a+c.q*P.find(p=>p.id==c.id).price,0)}
+function rC(){const s=sub(),d=+$("#disc").value||0;$("#cart").innerHTML=cart.map((c,i)=>{const p=P.find(x=>x.id==c.id);return`<tr><td>${E(p.name)}</td><td>${c.q} × ${M(p.price)}</td><td>${M(c.q*p.price)}</td><td><button class="d" onclick="cart.splice(${i},1);rC()">Remove</button></td></tr>`}).join("");$("#sum").textContent=`Subtotal ${M(s)} − discount ${M(d)} = ${M(s-d)}`}
+$("#disc").oninput=rC;
+$("#add").onclick=()=>{const p=P.find(x=>x.id==$("#sp").value),q=parseInt($("#sq").value);if(!p||!(q>=1))return msg("Choose a product and a quantity.",1);const c=cart.find(x=>x.id==p.id),n=(c?c.q:0)+q;if(n>p.qty)return msg(`Only ${p.qty} of ${p.name} in stock.`,1);c?c.q=n:cart.push({id:p.id,q});rC()};
+$("#sell").onclick=async e=>{const b=e.target;if(!cart.length)return msg("Add at least one item.",1);b.disabled=true;const s=sub(),d=+$("#disc").value||0,pd=$("#paid").value===""?s-d:+$("#paid").value;
+const{data,error}=await sb.rpc("create_sale",{p_items:cart.map(c=>({id:c.id,qty:c.q})),p_discount:d,p_paid:pd,p_method:$("#pm").value,p_name:$("#cn").value,p_phone:$("#cp").value,p_key:key});b.disabled=false;if(error)return err(error);
+cart=[];key=crypto.randomUUID();["cn","cp","paid"].forEach(i=>$("#"+i).value="");$("#disc").value=0;rC();msg("Sale saved. Stock updated.");await load();inv(data)};
+// ---------- sales list & invoice
+const stat=s=>+s.paid>=+s.total?"Paid":+s.paid>0?"Partly paid":"Pending";
+function rS(){$("#st").innerHTML=S.map(s=>`<tr><td>${s.invoice_no}</td><td>${D(s.created_at)}</td><td>${E(s.customer_name||"Walk-in")}</td><td>${M(s.total)}</td><td>${stat(s)}${+s.paid<+s.total?" (due "+M(s.total-s.paid)+")":""}</td><td><button onclick="inv('${s.id}')">Bill</button> ${+s.paid<+s.total?`<button onclick="pay('${s.id}')">Add payment</button>`:""}</td></tr>`).join("")||"<tr><td>No sales yet.</td></tr>"}
+async function pay(id){const a=prompt("Payment received (₹):");if(a===null)return;const{error}=await sb.rpc("add_payment",{p_sale:id,p_amount:+a});if(error)return err(error);msg("Payment recorded.");load()}
+function inv(id){const s=S.find(x=>x.id==id);if(!s)return;const w=window.open("","_blank");if(!w)return msg("Allow pop-ups for this site, then press “Bill” in Sales & bills.",1);
+w.document.write(`<!doctype html><title>${s.invoice_no}</title><style>body{font:14px Arial;max-width:720px;margin:20px auto;color:#000}h1{margin:0}table{width:100%;border-collapse:collapse;margin:14px 0}td,th{border-bottom:1px solid #ccc;padding:6px;text-align:left}.r{text-align:right}@media print{button{display:none}}</style><button onclick="print()">Print / Save as PDF</button><h1>Aditya Mobile &amp; Electronics</h1><div>Srinagar, Siwan, Bihar (Near SBI Bank)<br>Phone: 8804447173</div><hr><b>Invoice ${s.invoice_no}</b> · ${new Date(s.created_at).toLocaleString("en-IN")}<br>Customer: ${E(s.customer_name||"Walk-in")} ${E(s.customer_phone||"")}<table><tr><th>Item</th><th>Qty</th><th>Price</th><th class=r>Amount</th></tr>${s.sale_items.map(i=>`<tr><td>${E(i.name)}</td><td>${i.qty}</td><td>${M(i.price)}</td><td class=r>${M(i.price*i.qty)}</td></tr>`).join("")}</table><div class=r>Subtotal: ${M(s.subtotal)}<br>Discount: ${M(s.discount)}<br><b>Total: ${M(s.total)}</b><br>Paid (${E(s.method)}): ${M(s.paid)}<br>Balance due: ${M(s.total-s.paid)}</div><p>Thank you for shopping with us!</p>`);w.document.close()}
+</script></body></html>
