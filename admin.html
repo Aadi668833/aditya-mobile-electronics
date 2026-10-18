@@ -13,6 +13,39 @@ main{padding:0 14px 40px;max-width:1100px;margin:auto}.card{background:var(--c);
 .tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:7px;border-bottom:1px solid var(--b);white-space:nowrap}th{color:var(--m);font-size:12px}
 #msg{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);padding:10px 16px;border-radius:8px;z-index:9;color:#000;max-width:92vw}.ok{background:var(--y)}.bad{background:#ff8a7a}
 .bar{height:8px;background:var(--y);border-radius:4px;margin:2px 0 8px}.low{color:#ffb020}.out{color:#ff8a7a}[hidden]{display:none!important}#login{max-width:340px;margin:12vh auto;padding:0 14px}#login input{width:100%;margin:6px 0}
+
+/* Mobile-friendly additions */
+html{-webkit-text-size-adjust:100%}
+body{overflow-x:hidden}
+header{gap:8px}.f>*{min-width:0}
+button,select,input,textarea{max-width:100%}
+@media (hover:hover){button:hover{border-color:var(--y)}button.p:hover{filter:brightness(1.08)}}
+@media (max-width:700px){
+header{padding:8px 12px}h1{font-size:15px}
+button,select,input,textarea{font-size:16px}
+button,select,input:not([type=checkbox]):not([type=hidden]){min-height:44px}
+nav{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:8px 12px}nav button{flex:0 0 auto}
+main{padding:0 12px 40px}
+.g{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{padding:12px}
+#t-prod table,#t-prod tbody,#t-sales table,#t-sales tbody{display:block}
+#t-prod thead,#t-sales thead{display:none}
+#pt tr{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 8px;padding:10px 0;border-bottom:1px solid var(--b)}
+#pt td{border:0;padding:2px 0;white-space:normal}
+#pt td:first-child{grid-column:1/-1;font-weight:600}
+#pt td:nth-child(2)::before{content:"Selling price";display:block;font-size:11px;color:var(--m);font-weight:400}
+#pt td:nth-child(3)::before{content:"Purchase price";display:block;font-size:11px;color:var(--m);font-weight:400}
+#pt td:nth-child(4)::before{content:"In stock";display:block;font-size:11px;color:var(--m);font-weight:400}
+#pt td:last-child{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+#pt td:last-child button{flex:1 1 28%}
+#st tr{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;padding:10px 0;border-bottom:1px solid var(--b)}
+#st td{border:0;padding:2px 0;white-space:normal}
+#st td:nth-child(1){font-weight:700;color:var(--y)}
+#st td:nth-child(4){text-align:right;font-weight:700}
+#st td:nth-child(5){grid-column:1/-1}
+#st td:last-child{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+#st td:last-child button{flex:1 1 40%}
+}
 </style></head><body>
 <div id="msg" role="status" hidden></div>
 <div id="login"><h1>Aditya Mobile: Admin</h1><div class="card"><form id="lf"><label>Email<input id="em" type="email" required autocomplete="username"></label><label>Password<input id="pw" type="password" required autocomplete="current-password"></label><br><button class="p" style="width:100%;margin-top:8px">Log in</button></form></div></div>
@@ -34,7 +67,7 @@ main{padding:0 14px 40px;max-width:1100px;margin:auto}.card{background:var(--c);
 <label>Selling price (₹)*<input name="price" type="number" min="0" step="0.01" required></label><label>Purchase price (₹)<input name="purchase_price" type="number" min="0" step="0.01"></label>
 <label>Opening stock<input name="qty" type="number" min="0" step="1" value="0"></label><label>Low-stock alert at<input name="low_stock" type="number" min="0" value="3"></label>
 <label>Specifications<textarea name="specs" rows="3"></textarea></label><label>Description<textarea name="description" rows="3"></textarea></label>
-<label>Photo (under 2 MB)<input name="img" type="file" accept="image/*"></label><label><input name="listed" type="checkbox" checked style="width:auto"> Show on website</label></div>
+<label>Photo (resized automatically)<input name="img" type="file" accept="image/*"></label><label><input name="listed" type="checkbox" checked style="width:auto"> Show on website</label></div>
 <br><button class="p">Save product</button> <button type="button" onclick="pf.hidden=true">Cancel</button></form>
 <div class="card tw"><table><thead><tr><th>Product</th><th>Price</th><th>Cost</th><th>Stock</th><th></th></tr></thead><tbody id="pt"></tbody></table></div></section>
 
@@ -89,8 +122,12 @@ $("#addp").onclick=()=>{pf.reset();pf.pid.value="";pf.qty.parentElement.hidden=f
 function ed(id){const p=P.find(x=>x.id==id);pf.reset();for(const k in p){const el=pf.elements[k];if(el&&el.type!="file"&&el.type!="checkbox")el.value=p[k]??""}pf.listed.checked=p.listed;pf.pid.value=id;pf.qty.parentElement.hidden=true;pf.hidden=false;pf.scrollIntoView()}
 pf.onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;try{const f=new FormData(pf),r={};for(const[k,v]of f.entries())if(k!="img")r[k]=v;
 const id=r.pid;delete r.pid;["price","purchase_price","low_stock","qty"].forEach(k=>r[k]=Number(r[k]||0));["sku","barcode","imei","brand","model"].forEach(k=>r[k]=r[k]||null);r.listed=pf.listed.checked;if(id)delete r.qty;
-const file=f.get("img");if(file&&file.size){if(file.size>2e6)throw Error("Photo must be under 2 MB.");const path=crypto.randomUUID()+"."+(file.name.split(".").pop()||"jpg").toLowerCase();const u=await sb.storage.from("product-images").upload(path,file);if(u.error)throw u.error;r.image_url=sb.storage.from("product-images").getPublicUrl(path).data.publicUrl}
+let file=f.get("img");if(file&&file.size){if(file.size>15e6)throw Error("Photo is too large. Please choose one under 15 MB.");file=await shrink(file);const path=crypto.randomUUID()+"."+(file.type=="image/jpeg"?"jpg":(file.name.split(".").pop()||"jpg").toLowerCase());const u=await sb.storage.from("product-images").upload(path,file);if(u.error)throw u.error;r.image_url=sb.storage.from("product-images").getPublicUrl(path).data.publicUrl}
 const{error}=await(id?sb.from("products").update(r).eq("id",id):sb.from("products").insert(r));if(error)throw error;msg("Product saved.");pf.hidden=true;await load()}catch(x){err(x.code=="23505"?Error("That SKU already exists."):x)}b.disabled=false};
+// Shrinks big phone photos to at most 1000 px (white background) so product pages load fast. Falls back to the original photo on any problem.
+async function shrink(file){try{const bmp=await createImageBitmap(file),k=Math.min(1,1000/Math.max(bmp.width,bmp.height));
+const c=document.createElement("canvas");c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(bmp,0,0,c.width,c.height);if(bmp.close)bmp.close();
+const b=await new Promise(r=>c.toBlob(r,"image/jpeg",.85));return b&&b.size<file.size?new File([b],"photo.jpg",{type:"image/jpeg"}):file}catch(e){return file}}
 async function del(id){if(!confirm("Delete this product?"))return;const{error}=await sb.from("products").delete().eq("id",id);if(error)return msg(error.code=="23503"?"This product has sales or purchase history, so it cannot be deleted. Untick “Show on website” instead.":error.message,1);msg("Product deleted.");load()}
 async function adj(id){const p=P.find(x=>x.id==id),n=prompt(`New stock count for ${p.name} (now ${p.qty}):`);if(n===null)return;const r=prompt("Reason for this correction (required):");if(r===null)return;const{error}=await sb.rpc("adjust_stock",{p_product:id,p_qty:parseInt(n),p_reason:r});if(error)return err(error);msg("Stock updated.");load()}
 // ---------- purchases
@@ -111,6 +148,47 @@ cart=[];key=crypto.randomUUID();["cn","cp","paid"].forEach(i=>$("#"+i).value="")
 const stat=s=>+s.paid>=+s.total?"Paid":+s.paid>0?"Partly paid":"Pending";
 function rS(){$("#st").innerHTML=S.map(s=>`<tr><td>${s.invoice_no}</td><td>${D(s.created_at)}</td><td>${E(s.customer_name||"Walk-in")}</td><td>${M(s.total)}</td><td>${stat(s)}${+s.paid<+s.total?" (due "+M(s.total-s.paid)+")":""}</td><td><button onclick="inv('${s.id}')">Bill</button> ${+s.paid<+s.total?`<button onclick="pay('${s.id}')">Add payment</button>`:""}</td></tr>`).join("")||"<tr><td>No sales yet.</td></tr>"}
 async function pay(id){const a=prompt("Payment received (₹):");if(a===null)return;const{error}=await sb.rpc("add_payment",{p_sale:id,p_amount:+a});if(error)return err(error);msg("Payment recorded.");load()}
-function inv(id){const s=S.find(x=>x.id==id);if(!s)return;const w=window.open("","_blank");if(!w)return msg("Allow pop-ups for this site, then press “Bill” in Sales & bills.",1);
-w.document.write(`<!doctype html><title>${s.invoice_no}</title><style>body{font:14px Arial;max-width:720px;margin:20px auto;color:#000}h1{margin:0}table{width:100%;border-collapse:collapse;margin:14px 0}td,th{border-bottom:1px solid #ccc;padding:6px;text-align:left}.r{text-align:right}@media print{button{display:none}}</style><button onclick="print()">Print / Save as PDF</button><h1>Aditya Mobile &amp; Electronics</h1><div>Srinagar, Siwan, Bihar (Near SBI Bank)<br>Phone: 8804447173</div><hr><b>Invoice ${s.invoice_no}</b> · ${new Date(s.created_at).toLocaleString("en-IN")}<br>Customer: ${E(s.customer_name||"Walk-in")} ${E(s.customer_phone||"")}<table><tr><th>Item</th><th>Qty</th><th>Price</th><th class=r>Amount</th></tr>${s.sale_items.map(i=>`<tr><td>${E(i.name)}</td><td>${i.qty}</td><td>${M(i.price)}</td><td class=r>${M(i.price*i.qty)}</td></tr>`).join("")}</table><div class=r>Subtotal: ${M(s.subtotal)}<br>Discount: ${M(s.discount)}<br><b>Total: ${M(s.total)}</b><br>Paid (${E(s.method)}): ${M(s.paid)}<br>Balance due: ${M(s.total-s.paid)}</div><p>Thank you for shopping with us!</p>`);w.document.close()}
+// Shop logo used on every invoice. Put your logo file named logo.png next to admin.html.
+const LOGO=new URL("logo.png",location.href).href;let logoData=null;
+// Reads logo.png once and embeds it inside the invoice, so it always shows and prints (no waiting on the network).
+async function logoSrc(){if(logoData!==null)return logoData;
+try{const r=await fetch(LOGO,{cache:"no-cache"});if(!r.ok){msg("Logo not found. Upload logo.png next to admin.html on GitHub. The invoice was made without the logo.",1);return ""}
+const b=await r.blob();return logoData=await new Promise((ok,no)=>{const f=new FileReader();f.onload=()=>ok(f.result);f.onerror=no;f.readAsDataURL(b)})}
+catch(e){return LOGO}}
+async function inv(id){const s=S.find(x=>x.id==id);if(!s)return;const w=window.open("","_blank");if(!w)return msg("Allow pop-ups for this site, then press “Bill” in Sales & bills.",1);
+w.document.write("<p style=\"font:16px Arial;padding:20px\">Preparing invoice…</p>");const logo=await logoSrc();
+const items=s.sale_items.map(i=>`<tr><td>${E(i.name)}</td><td>${i.qty}</td><td>${M(i.price)}</td><td class="r">${M(i.price*i.qty)}</td></tr>`).join("");
+w.document.open();w.document.write(`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${s.invoice_no}</title><style>
+@page{size:A4;margin:12mm}
+*{box-sizing:border-box}
+body{font:14px/1.45 Arial,sans-serif;max-width:760px;margin:0 auto;padding:16px;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.top{display:flex;align-items:center;gap:16px;padding-bottom:12px;border-bottom:3px solid #FFC400}
+.top img{width:110px;height:110px;object-fit:contain;flex:none}
+.top h1{margin:0 0 2px;font-size:24px}
+.meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:14px 0}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;margin:8px 0}
+th{background:#111;color:#FFC400;text-align:left}
+td,th{padding:7px 8px;border-bottom:1px solid #ccc}
+.r{text-align:right}th.r{text-align:right}
+.tot{margin-left:auto;max-width:300px}
+.tot div{display:flex;justify-content:space-between;padding:2px 0}
+.tot .g{font-size:16px;font-weight:700;border-top:2px solid #000;margin-top:4px;padding-top:6px}
+.bar{margin-bottom:12px}
+button{background:#FFC400;border:0;border-radius:8px;padding:10px 18px;font-size:15px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}
+@media (max-width:520px){.top img{width:80px;height:80px}.top h1{font-size:18px}body{padding:12px;font-size:13px}}
+@media print{.bar{display:none}body{padding:0;max-width:none}}
+</style></head><body>
+<div class="bar"><button id="pb" disabled>Loading logo…</button></div>
+<div class="top">${logo?`<img id="lg" src="${logo}" alt="Aditya Mobile logo">`:""}<div><h1>Aditya Mobile &amp; Electronics</h1><div>Srinagar, Siwan, Bihar (Near SBI Bank)</div><div>Phone: 8804447173</div></div></div>
+<div class="meta"><div><b>Invoice ${s.invoice_no}</b><br>${new Date(s.created_at).toLocaleString("en-IN")}</div><div>Customer: ${E(s.customer_name||"Walk-in")}<br>${E(s.customer_phone||"")}</div></div>
+<div class="tw"><table><tr><th>Item</th><th>Qty</th><th>Price</th><th class="r">Amount</th></tr>${items}</table></div>
+<div class="tot"><div><span>Subtotal</span><span>${M(s.subtotal)}</span></div><div><span>Discount</span><span>${M(s.discount)}</span></div><div class="g"><span>Total</span><span>${M(s.total)}</span></div><div><span>Paid (${E(s.method)})</span><span>${M(s.paid)}</span></div><div><span>Balance due</span><span>${M(s.total-s.paid)}</span></div></div>
+<p>Thank you for shopping with us!</p></body></html>`);
+w.document.close();
+// Print button stays disabled until the logo has loaded, so the logo never goes missing from the PDF.
+const im=w.document.getElementById("lg"),pb=w.document.getElementById("pb"),ready=()=>{pb.disabled=false;pb.textContent="Print / Save as PDF"};
+if(!im)ready();else{im.onerror=()=>{im.style.display="none";ready()};im.onload=ready;if(im.complete){im.naturalWidth?ready():im.onerror()}setTimeout(ready,4000)}
+pb.onclick=()=>w.print()}
 </script></body></html>
