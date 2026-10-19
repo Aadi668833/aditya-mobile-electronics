@@ -5,93 +5,329 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Aditya Mobile &amp; Electronics, Siwan</title>
 <meta name="description" content="Mobile phones, accessories and electronics in Srinagar, Siwan, Bihar. Near SBI Bank.">
+<link rel="icon" href="logo.png">
 <style>
-:root{--y:#FFC400;--k:#000;--c:#141414;--l:#2c2c2c;--t:#f5f5f5;--m:#a3a3a3}
+:root{--y:#FFC400;--y2:#ffd84d;--ink:#14161a;--mut:#6b7280;--line:#e6e8ec;--bg:#f4f5f7;--ok:#15803d;--bad:#dc2626}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--k);color:var(--t);font:16px/1.5 "Segoe UI",system-ui,sans-serif}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;overflow-x:hidden}
 a{color:inherit}
+img{max-width:100%}
 :focus-visible{outline:3px solid var(--y);outline-offset:2px}
-header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 5vw;background:var(--k);border-bottom:3px solid var(--y);position:sticky;top:0;z-index:5}
-.logo{font-weight:800;font-size:1.15rem;text-decoration:none}
-.logo b{color:var(--y)}
-.btn{display:inline-block;background:var(--y);color:#000;font-weight:700;padding:10px 18px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;font-size:1rem}
-.btn.o{background:none;color:var(--y);border:2px solid var(--y)}
-.hero{padding:9vh 5vw 6vh;max-width:900px}
-.hero h1{font-size:clamp(2rem,6vw,3.6rem);line-height:1.08;margin:0 0 14px;letter-spacing:-.02em}
-.hero h1 span{background:var(--y);color:#000;padding:0 .2em}
-.hero p{color:var(--m);max-width:55ch}
-.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-section{padding:28px 5vw}
-h2{margin:0 0 14px;font-size:1.5rem}
-.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-input,select{background:var(--c);color:var(--t);border:1px solid var(--l);border-radius:10px;padding:10px 12px;font:inherit}
-input{flex:1;min-width:200px}
-.chips button{background:var(--c);color:var(--t);border:1px solid var(--l);border-radius:999px;padding:8px 14px;cursor:pointer;font:inherit}
-.chips button.on{background:var(--y);color:#000;border-color:var(--y);font-weight:700}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
-.card{background:var(--c);border:1px solid var(--l);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
-.img{aspect-ratio:4/3;background:#222;display:grid;place-items:center;font-size:2.5rem;color:var(--l)}
-.img img{width:100%;height:100%;object-fit:cover}
-.bd{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}
-.bd h3{margin:0;font-size:1.02rem}
-.sp{color:var(--m);font-size:.88rem;white-space:pre-line}
-.pr{font-size:1.3rem;font-weight:800;color:var(--y)}
-.tag{font-size:.8rem}
-.in{color:#7ddc7d}
-.no{color:#ff8a7a}
-.bd .btn{margin-top:auto;text-align:center;padding:9px}
-.bd .btn[aria-disabled=true]{opacity:.5}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.c{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+.i{width:1.25em;height:1.25em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 20px;border-radius:999px;background:var(--y);color:#000;font-weight:700;font-size:.95rem;text-decoration:none;border:2px solid var(--y);cursor:pointer;white-space:nowrap;transition:background-color .2s,color .2s,border-color .2s}
+.btn.o{background:none;color:var(--ink);border-color:var(--ink)}
+.btn.k{background:#000;color:#fff;border-color:#000}
+.hero .btn.o{color:var(--y);border-color:var(--y)}
+@media (hover:hover){.btn:hover{background:var(--y2);border-color:var(--y2)}.btn.o:hover{background:var(--ink);color:#fff}.hero .btn.o:hover{background:var(--y);color:#000}.btn.k:hover{background:#222;border-color:#222;color:#fff}}
+
+/* info bar */
+.ann{background:#000;color:#cfcfcf;font-size:.82rem}
+.ann-in{display:flex;justify-content:space-between;align-items:center;gap:6px 18px;flex-wrap:wrap;padding-top:7px;padding-bottom:7px}
+.ann span{display:inline-flex;align-items:center;gap:6px}
+.ann-r{display:flex;gap:16px;flex-wrap:wrap}
+.ann a{text-decoration:none}.ann a:hover{color:var(--y)}
+
+/* header */
+.top{background:#fff;z-index:20}
+.hd{display:grid;grid-template-columns:auto minmax(220px,1fr) auto;gap:12px 28px;align-items:center;padding-top:12px;padding-bottom:12px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;min-width:0}
+.logo img{width:44px;height:44px;border-radius:50%;flex:none;border:1px solid var(--line)}
+.logo span{font-weight:800;font-size:1.1rem;line-height:1.15;letter-spacing:-.01em}
+.logo b{background:var(--y);padding:0 .22em;border-radius:4px}
+.logo small{display:block;font-weight:500;font-size:.75rem;color:var(--mut);letter-spacing:0}
+.sr{display:flex;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:999px;overflow:hidden;min-width:0}
+.sr:focus-within{border-color:var(--y);box-shadow:0 0 0 3px rgba(255,196,0,.25)}
+.sr .i{margin-left:14px;color:var(--mut)}
+.sr input{flex:1;min-width:0;border:0;background:none;font:inherit;padding:0 12px;min-height:44px;color:var(--ink)}
+.sr input:focus{outline:0}
+.sr button{align-self:stretch;border:0;background:var(--y);color:#000;padding:0 18px;cursor:pointer}
+.hb{display:flex;gap:10px;align-items:center}
+.hb .btn{padding:8px 16px}
+.nv{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.nv-in{display:flex;align-items:center;gap:6px;overflow-x:auto;scrollbar-width:none}
+.nv-in::-webkit-scrollbar{display:none}
+#cats{display:flex}
+#cats button,.nv a{background:none;border:0;border-bottom:3px solid transparent;font:inherit;font-weight:600;padding:12px 14px 9px;color:var(--ink);cursor:pointer;white-space:nowrap;text-decoration:none}
+#cats button.on{border-bottom-color:var(--y)}
+@media (hover:hover){#cats button:hover,.nv a:hover{border-bottom-color:var(--y)}}
+.nv a{margin-left:auto;color:var(--mut)}
+@media (min-width:900px){.top{position:sticky;top:0;box-shadow:0 1px 0 var(--line)}}
+
+/* hero */
+.hero{background:radial-gradient(60% 90% at 82% 45%,rgba(255,196,0,.30),transparent 70%),radial-gradient(40% 60% at 5% 0%,rgba(255,196,0,.12),transparent 70%),#000;color:#fff;overflow:hidden}
+.hero-in{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center;padding-top:clamp(28px,6vw,68px);padding-bottom:clamp(28px,6vw,68px)}
+.hero h1{font-size:clamp(2rem,4.8vw,3.7rem);line-height:1.07;margin:0 0 16px;letter-spacing:-.025em}
+.hero h1 span{color:var(--y)}
+.hero p{color:#b9b9b9;max-width:52ch;margin:0}
+.row{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.hchips{list-style:none;margin:28px 0 0;padding:0;display:flex;gap:10px 22px;flex-wrap:wrap;color:#d6d6d6;font-size:.9rem}
+.hchips li{display:flex;align-items:center;gap:8px}
+.hchips .i{color:var(--y)}
+.hv{position:relative;height:340px}
+.hv-logo{position:absolute;inset:0;margin:auto;width:min(290px,80%);border-radius:50%;box-shadow:0 0 60px rgba(255,196,0,.35)}
+.hv-card{position:absolute;width:42%;background:#fff;color:#111;border-radius:18px;padding:10px;box-shadow:0 22px 44px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:2px;min-width:0}
+.hv-im{aspect-ratio:1/1;position:relative}
+.hv-im img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.hv-card b{font-size:.8rem;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.hv-card span{font-weight:800;font-size:.9rem}
+.t1{left:0;top:44px;transform:rotate(-3deg)}
+.t2{left:29%;top:0;z-index:2}
+.t3{left:58%;top:64px;transform:rotate(3deg)}
+
+/* sections */
+.sec{padding-top:28px;padding-bottom:6px}
+section[id]{scroll-margin-top:12px}
+@media (min-width:900px){section[id]{scroll-margin-top:130px}}
+.sh{margin:0;font-size:clamp(1.25rem,2.4vw,1.65rem);letter-spacing:-.01em}
+.sh-row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.cnt{margin:2px 0 0;color:var(--mut);font-size:.9rem}
+.av select{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:0 16px;min-height:44px;font:inherit;color:var(--ink)}
+
+/* category circles */
+.cc{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:14px;margin-top:16px}
+.cc-i{background:none;border:0;font:inherit;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:0}
+.circ{width:clamp(66px,12vw,92px);height:clamp(66px,12vw,92px);border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#fffdf2,#ffefb0);border:1px solid #f2dc84;transition:transform .2s,background-color .2s}
+.circ .i{width:36%;height:36%;stroke-width:1.6}
+.cc-i b{font-size:.9rem;line-height:1.2}
+.cc-i small{color:var(--mut);font-size:.78rem;margin-top:-4px}
+.cc-i.on .circ{background:var(--y);border-color:var(--y);box-shadow:0 0 0 4px rgba(255,196,0,.3)}
+@media (hover:hover){.cc-i:hover .circ{transform:translateY(-3px)}}
+
+/* product grid + cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.grid>*{min-width:0}
+.grid>p{grid-column:1/-1;color:var(--mut)}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .2s,border-color .2s}
+@media (hover:hover){.card:hover{box-shadow:0 10px 28px rgba(0,0,0,.1);border-color:#d9dce2}}
+.img{aspect-ratio:4/3;background:#fff;border-bottom:1px solid #f0f1f3;display:grid;place-items:center;overflow:hidden;position:relative;color:#c4c8cf}
+.img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px}
+.ph{width:34%;height:34%;stroke-width:1.2}
+.soldout .img img,.soldout .ph{opacity:.45}
+.bd{padding:14px;display:flex;flex-direction:column;gap:5px;flex:1}
+.bd h3{margin:0;font-size:1rem;line-height:1.3;overflow-wrap:anywhere}
+.sp{color:var(--mut);font-size:.85rem;white-space:pre-line;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pr{font-size:1.3rem;font-weight:800;margin-top:2px}
+.tag{font-size:.8rem;font-weight:600}.in{color:var(--ok)}.no{color:var(--bad)}
+.bd .btn{margin-top:auto;width:100%;font-size:.9rem;min-height:42px}
+.bd .btn+.btn{margin-top:6px}
+
+/* promos */
+.promos{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pb{border-radius:20px;padding:clamp(20px,3vw,32px);display:flex;justify-content:space-between;align-items:center;gap:16px;overflow:hidden;position:relative}
+.pb h3{margin:0 0 6px;font-size:clamp(1.2rem,2.3vw,1.6rem);line-height:1.2}
+.pb p{margin:0 0 16px;max-width:36ch}
+.pb .i.big{width:96px;height:96px;stroke-width:1;opacity:.9}
+.pb.dark{background:radial-gradient(70% 120% at 100% 50%,rgba(255,196,0,.28),transparent 70%),#000;color:#fff}
+.pb.dark p{color:#bdbdbd}.pb.dark .big{color:var(--y)}
+.pb.light{background:linear-gradient(120deg,#fff3c4,#ffd84d);color:#111}
+
+/* trust strip */
+.trust{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}
+.trust>div{display:flex;gap:12px;align-items:center;min-width:0}
+.ti{width:46px;height:46px;border-radius:50%;background:#fff3c4;display:grid;place-items:center;flex:none}
+.trust b{display:block;font-size:.95rem;line-height:1.2}
+.trust small{color:var(--mut);font-size:.8rem;display:block;line-height:1.3}
+
+/* visit */
 .info{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-.info div{background:var(--c);border-left:4px solid var(--y);padding:14px 16px;border-radius:8px}
-footer{padding:22px 5vw;border-top:1px solid var(--l);color:var(--m);font-size:.9rem}
+.info>div{background:#fff;border:1px solid var(--line);border-left:4px solid var(--y);padding:16px 18px;border-radius:12px;display:flex;gap:14px;align-items:flex-start;min-width:0}
+.info .ti{width:42px;height:42px}
+.info a{display:inline-block;padding:4px 0}
+
+/* footer */
+.ft{background:#0a0a0a;color:#bdbdbd;margin-top:34px}
+.ft-in{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:28px;padding-top:36px;padding-bottom:30px}
+.ft h4{margin:0 0 10px;color:#fff;font-size:1rem}
+.ft a,.ft p{display:block;margin:0 0 6px;font-size:.92rem;text-decoration:none;color:#bdbdbd}
+.ft a:hover{color:var(--y)}
+.ft .logo{color:#fff;margin-bottom:10px}
+.ft .logo img{border-color:#333}
+.ft-bot{border-top:1px solid #222;padding:16px 0;font-size:.85rem;color:#8d8d8d}
+
+/* tablets */
+@media (max-width:900px){
+.hd{grid-template-columns:1fr auto}
+.sr{grid-column:1/-1;order:3}
+.hero-in{grid-template-columns:1fr}
+.hv{display:none}
+.promos{grid-template-columns:1fr}
+.trust{grid-template-columns:1fr 1fr}
+.ft-in{grid-template-columns:1fr 1fr}
+}
+/* phones */
+@media (max-width:600px){
+.ann{font-size:.76rem}
+.ann-in{justify-content:center;text-align:center}
+.hb .btn{width:44px;padding:0}
+.hb .lbl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.logo span{font-size:1rem}
+.row .btn{flex:1 1 140px}
+.hchips{gap:8px 16px;font-size:.84rem}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.img{aspect-ratio:1/1}
+.bd{padding:10px}
+.bd h3{font-size:.92rem}
+.sp{font-size:.78rem;-webkit-line-clamp:2}
+.pr{font-size:1.1rem}
+.bd .btn{padding:8px 6px;font-size:.82rem}
+.cc{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cc-i b{font-size:.78rem}.cc-i small{font-size:.7rem}
+.pb .i.big{display:none}
+.trust{grid-template-columns:1fr;padding:14px}
+.info{grid-template-columns:1fr}
+.ft-in{grid-template-columns:1fr 1fr;gap:22px 16px}
+.ft-b{grid-column:1/-1}
+}
+@media (max-width:359px){
+.grid{grid-template-columns:1fr}
+.ft-in{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+<symbol id="i-head" viewBox="0 0 24 24"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></symbol>
+<symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.5-4.6A8 8 0 1 1 21 12z"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+<symbol id="i-call" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+<symbol id="i-insta" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></symbol>
+<symbol id="i-live" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8L3 12z"/><circle cx="7.5" cy="8.5" r="1.2"/></symbol>
+</defs></svg>
 
-<header>
-  <a class="logo" href="#">Aditya <b>Mobile</b> &amp; Electronics</a>
+<div class="ann"><div class="c ann-in">
+  <span><svg class="i"><use href="#i-pin"/></svg>Srinagar, Siwan, Bihar &middot; Near SBI Bank</span>
+  <span class="ann-r"><a href="tel:+918804447173">Call 8804447173</a><a href="https://instagram.com/adityamobile.siwan" target="_blank" rel="noopener">@adityamobile.siwan</a></span>
+</div></div>
 
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-   
-   <a class="btn o" id="stk" href="./admin.html">Stock Management</a>
-    <a class="btn" id="wa0" target="_blank" rel="noopener">WhatsApp us</a>
+<header class="top">
+  <div class="c hd">
+    <a class="logo" href="#"><img src="logo.png" alt="" width="44" height="44"><span>Aditya <b>Mobile</b> &amp; Electronics<small>Siwan, Bihar</small></span></a>
+    <form class="sr" role="search">
+      <svg class="i"><use href="#i-search"/></svg>
+      <input id="q" type="search" placeholder="Search by name, brand or model" aria-label="Search products" autocomplete="off">
+      <button type="submit" aria-label="Search"><svg class="i"><use href="#i-search"/></svg></button>
+    </form>
+    <div class="hb">
+      <a class="btn o" id="stk" href="./admin.html" title="Stock Management"><svg class="i"><use href="#i-box"/></svg><span class="lbl">Stock Management</span></a>
+      <a class="btn" id="wa0" target="_blank" rel="noopener" title="WhatsApp us"><svg class="i"><use href="#i-chat"/></svg><span class="lbl">WhatsApp us</span></a>
+    </div>
   </div>
+  <nav class="nv" aria-label="Categories"><div class="c nv-in"><div id="cats"></div><a href="#visit">Visit us</a></div></nav>
 </header>
 
-
-<div class="hero">
-  <h1>Phones, accessories and electronics in <span>Siwan</span></h1>
-  <p>Browse what is in the shop right now. Found something you like? Message us on WhatsApp to confirm and reserve it.</p>
-  <div class="row">
-    <a class="btn" href="#shop">See products</a>
-    <a class="btn o" href="#visit">Find the shop</a>
+<section class="hero">
+  <div class="c hero-in">
+    <div class="hero-tx">
+      <h1>Phones, accessories and electronics in <span>Siwan</span></h1>
+      <p>Browse what is in the shop right now. Found something you like? Message us on WhatsApp to confirm and reserve it.</p>
+      <div class="row">
+        <a class="btn" href="#shop">See products</a>
+        <a class="btn o" href="#visit">Find the shop</a>
+      </div>
+      <ul class="hchips">
+        <li><svg class="i"><use href="#i-live"/></svg>Live stock status</li>
+        <li><svg class="i"><use href="#i-chat"/></svg>Ask on WhatsApp</li>
+        <li><svg class="i"><use href="#i-pin"/></svg>Near SBI Bank</li>
+      </ul>
+    </div>
+    <div class="hv" id="hv" aria-hidden="true"><img class="hv-logo" src="logo.png" alt=""></div>
   </div>
-</div>
+</section>
 
-<section id="shop">
-  <h2>Our products</h2>
-  <div class="tools">
-    <input id="q" type="search" placeholder="Search by name, brand or model" aria-label="Search products">
-    <select id="av" aria-label="Availability">
-      <option value="">All items</option>
-      <option value="1">In stock only</option>
-    </select>
+<section class="c sec" aria-labelledby="cat-h">
+  <h2 class="sh" id="cat-h">Shop by category</h2>
+  <div class="cc" id="cc"></div>
+</section>
+
+<section id="shop" class="c sec">
+  <div class="sh-row">
+    <div><h2 class="sh">Our products</h2><p class="cnt" id="cnt" aria-live="polite"></p></div>
+    <label class="av"><span class="vh">Availability</span>
+      <select id="av" aria-label="Availability">
+        <option value="">All items</option>
+        <option value="1">In stock only</option>
+      </select>
+    </label>
   </div>
-  <div class="chips tools" id="cats"></div>
   <div class="grid" id="grid" aria-live="polite"><p>Loading products…</p></div>
 </section>
 
-<section id="visit">
-  <h2>Visit us</h2>
-  <div class="info">
-    <div><b>Address</b><br>Srinagar, Siwan, Bihar, India<br>Near SBI Bank</div>
-    <div><b>Call or WhatsApp</b><br><a href="tel:+918804447173">8804447173</a></div>
-    <div><b>Instagram</b><br><a href="https://instagram.com/adityamobile.siwan" target="_blank" rel="noopener">@adityamobile.siwan</a></div>
+<section class="c sec promos">
+  <div class="pb dark">
+    <div>
+      <h3>Looking for the best price?</h3>
+      <p>Send us the product name on WhatsApp and we will confirm the price and stock.</p>
+      <a class="btn" id="wa1" target="_blank" rel="noopener"><svg class="i"><use href="#i-chat"/></svg>Message on WhatsApp</a>
+    </div>
+    <svg class="i big"><use href="#i-chat"/></svg>
+  </div>
+  <div class="pb light">
+    <div>
+      <h3>Visit our shop</h3>
+      <p>Srinagar, Siwan, Bihar. Near SBI Bank.</p>
+      <a class="btn k" href="tel:+918804447173"><svg class="i"><use href="#i-call"/></svg>Call 8804447173</a>
+    </div>
+    <svg class="i big"><use href="#i-pin"/></svg>
   </div>
 </section>
 
-<footer>© Aditya Mobile &amp; Electronics, Siwan. Prices and availability can change; please confirm on WhatsApp.</footer>
+<section class="c sec" aria-label="Why shop with us">
+  <div class="trust">
+    <div><span class="ti"><svg class="i"><use href="#i-live"/></svg></span><div><b>Live stock status</b><small>See what is available before you visit</small></div></div>
+    <div><span class="ti"><svg class="i"><use href="#i-chat"/></svg></span><div><b>WhatsApp enquiries</b><small>Message us about any product</small></div></div>
+    <div><span class="ti"><svg class="i"><use href="#i-tag"/></svg></span><div><b>Prices upfront</b><small>Selling price shown on every product</small></div></div>
+    <div><span class="ti"><svg class="i"><use href="#i-pin"/></svg></span><div><b>Local shop in Siwan</b><small>Srinagar, near SBI Bank</small></div></div>
+  </div>
+</section>
+
+<section id="visit" class="c sec">
+  <h2 class="sh" style="margin-bottom:16px">Visit us</h2>
+  <div class="info">
+    <div><span class="ti"><svg class="i"><use href="#i-pin"/></svg></span><div><b>Address</b><br>Srinagar, Siwan, Bihar, India<br>Near SBI Bank</div></div>
+    <div><span class="ti"><svg class="i"><use href="#i-call"/></svg></span><div><b>Call or WhatsApp</b><br><a href="tel:+918804447173">8804447173</a></div></div>
+    <div><span class="ti"><svg class="i"><use href="#i-insta"/></svg></span><div><b>Instagram</b><br><a href="https://instagram.com/adityamobile.siwan" target="_blank" rel="noopener">@adityamobile.siwan</a></div></div>
+  </div>
+</section>
+
+<footer class="ft">
+  <div class="c ft-in">
+    <div class="ft-b">
+      <a class="logo" href="#"><img src="logo.png" alt="" width="44" height="44"><span>Aditya Mobile &amp; Electronics<small>Siwan, Bihar</small></span></a>
+      <p>Mobile phones, accessories and electronics in Siwan, Bihar.</p>
+    </div>
+    <div>
+      <h4>Shop</h4>
+      <a href="#shop" data-c="All">All products</a>
+      <a href="#shop" data-c="Mobile Phones">Mobile Phones</a>
+      <a href="#shop" data-c="Accessories">Accessories</a>
+      <a href="#shop" data-c="Electronics">Electronics</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <a href="tel:+918804447173">Call 8804447173</a>
+      <a id="wa2" target="_blank" rel="noopener">WhatsApp us</a>
+      <a href="https://instagram.com/adityamobile.siwan" target="_blank" rel="noopener">@adityamobile.siwan</a>
+    </div>
+    <div>
+      <h4>Visit</h4>
+      <p>Srinagar, Siwan, Bihar, India<br>Near SBI Bank</p>
+      <a href="./admin.html">Stock Management</a>
+    </div>
+  </div>
+  <div class="ft-bot"><div class="c">© Aditya Mobile &amp; Electronics, Siwan. Prices and availability can change; please confirm on WhatsApp.</div></div>
+</footer>
 
 <script src="config.js"></script>
 <script>
@@ -104,28 +340,51 @@ const E = value => String(value ?? "").replace(/[&<>"']/g, char => ({
 }[char]));
 
 const wa = message => `https://wa.me/${N}?text=${encodeURIComponent(message)}`;
-$("#wa0").href = wa("Hello Aditya Mobile & Electronics, I have a question.");
+["wa0", "wa1", "wa2"].forEach(id => {
+  const link = $("#" + id);
+  if (link) link.href = wa("Hello Aditya Mobile & Electronics, I have a question.");
+});
 
 let all = [];
 let cat = "";
 
 const CATS = ["All", "Mobile Phones", "Accessories", "Electronics"];
-$("#cats").innerHTML = CATS.map(category =>
-  `<button type="button" class="${category === "All" ? "on" : ""}" data-c="${E(category)}">${E(category)}</button>`
-).join("");
+const ICON = { "All": "i-grid", "Mobile Phones": "i-phone", "Accessories": "i-head", "Electronics": "i-chip" };
+const isOn = name => name === "All" ? !cat : cat === name;
 
-$("#cats").onclick = event => {
-  const button = event.target.closest("button");
-  if (!button) return;
-  cat = button.dataset.c === "All" ? "" : button.dataset.c;
-  document.querySelectorAll("#cats button").forEach(item =>
-    item.classList.toggle("on", item === button)
-  );
+function renderCats() {
+  $("#cats").innerHTML = CATS.map(category =>
+    `<button type="button" class="${isOn(category) ? "on" : ""}" data-c="${E(category)}">${E(category)}</button>`
+  ).join("");
+  $("#cc").innerHTML = CATS.map(category => {
+    const count = category === "All" ? all.length : all.filter(p => p.category === category).length;
+    return `<button type="button" class="cc-i ${isOn(category) ? "on" : ""}" data-c="${E(category)}">
+      <span class="circ"><svg class="i"><use href="#${ICON[category]}"/></svg></span>
+      <b>${category === "All" ? "All products" : E(category)}</b>
+      ${all.length ? `<small>${count} item${count === 1 ? "" : "s"}</small>` : ""}
+    </button>`;
+  }).join("");
+}
+
+function setCategory(name) {
+  cat = name === "All" ? "" : name;
+  renderCats();
   draw();
-};
+  $("#shop").scrollIntoView();
+}
+
+document.addEventListener("click", event => {
+  const item = event.target.closest("[data-c]");
+  if (!item) return;
+  event.preventDefault();
+  setCategory(item.dataset.c);
+});
 
 $("#q").oninput = draw;
+$("#q").form.onsubmit = event => { event.preventDefault(); $("#shop").scrollIntoView(); };
 $("#av").onchange = draw;
+
+const PLACEHOLDER = `<svg class="i ph"><use href="#i-phone"/></svg>`;
 
 function draw() {
   const query = $("#q").value.toLowerCase().trim();
@@ -137,12 +396,14 @@ function draw() {
     [product.name, product.brand, product.model].join(" ").toLowerCase().includes(query)
   );
 
+  $("#cnt").textContent = all.length ? `${results.length} product${results.length === 1 ? "" : "s"}` : "";
+
   $("#grid").innerHTML = results.map(product => `
-    <article class="card">
+    <article class="card ${product.in_stock ? "" : "soldout"}">
       <div class="img">
         ${product.image_url
-          ? `<img loading="lazy" src="${E(product.image_url)}" alt="${E(product.name)}">`
-          : "📱"}
+          ? `<img loading="lazy" decoding="async" width="400" height="400" src="${E(product.image_url)}" alt="${E(product.name)}">`
+          : PLACEHOLDER}
       </div>
       <div class="bd">
         <h3>${E(product.name)}</h3>
@@ -160,6 +421,18 @@ function draw() {
   `).join("") || "<p>No products match. Try another search, or message us on WhatsApp.</p>";
 }
 
+// Hero: show up to three real product photos from the catalog (the logo stays if there are none).
+function renderHero() {
+  const withPhoto = all.filter(product => product.image_url).slice(0, 3);
+  if (!withPhoto.length) return;
+  const spots = withPhoto.length === 1 ? ["t2"] : withPhoto.length === 2 ? ["t1", "t3"] : ["t1", "t2", "t3"];
+  $("#hv").innerHTML = withPhoto.map((product, index) => `
+    <div class="hv-card ${spots[index]}">
+      <div class="hv-im"><img loading="lazy" decoding="async" width="300" height="300" src="${E(product.image_url)}" alt=""></div>
+      <b>${E(product.name)}</b>
+      <span>₹${Number(product.price).toLocaleString("en-IN")}</span>
+    </div>`).join("");
+}
 
 async function loadProducts() {
   if (!window.CFG || !CFG.url || !CFG.key) {
@@ -203,8 +476,8 @@ async function loadProducts() {
         : Number(product.qty ?? 0) > 0
     }));
 
-    console.log("Products received:", all);
-    console.log("Number of products:", all.length);
+    renderCats();
+    renderHero();
     draw();
 
   } catch (error) {
@@ -214,6 +487,7 @@ async function loadProducts() {
   }
 }
 
+renderCats();
 loadProducts();
 </script>
 </body>
