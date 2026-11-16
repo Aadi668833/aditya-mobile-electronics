@@ -99,6 +99,42 @@ th{color:var(--m);font-size:.75rem;font-weight:600}
 .bar i{font-style:normal}
 small{color:var(--m)}
 
+
+/* ---------- auto-fill ---------- */
+.af{border:1.5px solid var(--y);background:linear-gradient(180deg,#fffdf2,#fff)}
+.af h2{display:flex;align-items:center;gap:8px}
+.af .tagai{background:#000;color:var(--y);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.03em}
+.af-row{display:flex;gap:10px;flex-wrap:wrap}
+.af-row input{flex:1 1 240px;min-width:0}
+.af-hint{margin:8px 0 0;font-size:.8rem;color:var(--m)}
+.af-st{margin-top:10px;padding:10px 12px;border-radius:10px;font-weight:600;font-size:.9rem}
+.af-st.bad{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.af-st.wait{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+.af-res{margin-top:14px}
+.af-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px 14px;margin:8px 0 12px}
+.af-sum div{min-width:0;font-size:.88rem;overflow-wrap:anywhere}
+.af-sum span{display:block;font-size:.72rem;color:var(--m);font-weight:600}
+.af-dup{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:.9rem}
+.af-dup.soft{background:#fffbeb;border-color:#fde68a;color:#78350f}
+.af-dup button{margin:6px 6px 0 0}
+.af-conf{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;background:#e5e7eb}
+.af-conf.high{background:#dcfce7;color:#166534}.af-conf.low{background:#fee2e2;color:#991b1b}.af-conf.medium{background:#fef3c7;color:#92400e}
+.af-src{font-size:.8rem;color:var(--m);margin:8px 0}
+.af-src a{color:var(--ink);margin-right:10px}
+.af-imgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin:8px 0}
+.af-im{position:relative;padding:0;border:2px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;aspect-ratio:1/1;min-height:0!important}
+.af-im img{width:100%;height:100%;object-fit:contain;display:block}
+.af-im.on{border-color:var(--y);box-shadow:0 0 0 3px rgba(255,196,0,.35)}
+.af-im small{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);color:#fff;font-size:.62rem;padding:2px 4px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.af-note{font-size:.78rem;color:var(--m)}
+.pv{display:flex;gap:12px;align-items:center;flex-wrap:wrap;grid-column:1/-1}
+.pv img{width:96px;height:96px;object-fit:contain;border:1px solid var(--line);border-radius:12px;background:#fff}
+.pv-none{width:96px;height:96px;border:1px dashed var(--line);border-radius:12px;display:grid;place-items:center;color:var(--m);font-size:.72rem;text-align:center}
+.pv small{display:block;max-width:34ch}
+.f .wide{grid-column:1/-1}
+.pr2{color:var(--ok);font-weight:700}
+.was{text-decoration:line-through;color:var(--m);font-weight:400;font-size:.85em}
+
 /* ---------- phones and tablets ---------- */
 @media (max-width:900px){
 .shell{display:block}
@@ -191,15 +227,22 @@ button,select,input:not([type=checkbox]):not([type=hidden]){min-height:44px}
 </div></section>
 
 
-<section id="t-prod" hidden><div class="f"><input id="pq" placeholder="Search name, model, SKU, IMEI" oninput="rP()"><div><button class="p" id="addp">+ Add product</button></div></div>
-<form id="pf" class="card" hidden><input type="hidden" name="pid"><div class="f">
+<section id="t-prod" hidden>
+<div class="card af"><h2>Auto-fill from product name <span class="tagai">AI</span></h2>
+<form id="af" class="af-row"><input id="afq" placeholder="e.g. Samsung Galaxy M35 5G" maxlength="120" aria-label="Product name, brand or model" autocomplete="off"><button class="p" id="afb">Find product</button></form>
+<p class="af-hint">Type a name, brand or model number. Details come from the web and photos from openly licensed sources. Always check them, then add your own prices and stock. Nothing is saved until you press Save product.</p>
+<div id="afs" role="status" aria-live="polite"></div><div id="afr" class="af-res"></div></div>
+<div class="f"><input id="pq" placeholder="Search name, model, SKU, IMEI" oninput="rP()"><div><button class="p" id="addp">+ Add product</button></div></div>
+<form id="pf" class="card" hidden><input type="hidden" name="pid"><input type="hidden" name="image_credit"><div class="f">
 <label>Name*<input name="name" required></label><label>Brand<input name="brand"></label><label>Model<input name="model"></label>
 <label>Category*<select name="category"><option>Mobile Phones</option><option>Accessories</option><option>Electronics</option></select></label>
 <label>SKU<input name="sku"></label><label>Barcode<input name="barcode"></label><label>IMEI / serial<input name="imei"></label>
-<label>Selling price (₹)*<input name="price" type="number" min="0" step="0.01" required></label><label>Purchase price (₹)<input name="purchase_price" type="number" min="0" step="0.01"></label>
+<label>Selling price (₹)*<input name="price" type="number" min="0" step="0.01" required></label><label>Discount price (₹), optional<input name="discount_price" type="number" min="0" step="0.01" placeholder="blank = no discount"></label><label>Purchase price (₹)<input name="purchase_price" type="number" min="0" step="0.01"></label>
 <label>Opening stock<input name="qty" type="number" min="0" step="1" value="0"></label><label>Low-stock alert at<input name="low_stock" type="number" min="0" value="3"></label>
-<label>Specifications<textarea name="specs" rows="3"></textarea></label><label>Description<textarea name="description" rows="3"></textarea></label>
-<label>Photo (resized automatically)<input name="img" type="file" accept="image/*"></label><label><input name="listed" type="checkbox" checked style="width:auto"> Show on website</label></div>
+<label>Colours (comma separated)<input name="colors" placeholder="Blue, Black"></label>
+<label class="wide">Specifications<textarea name="specs" rows="6"></textarea></label><label class="wide">Description<textarea name="description" rows="3"></textarea></label>
+<div class="pv" id="pv"></div>
+<label>Upload your own photo (resized automatically)<input name="img" type="file" accept="image/*"></label><label><input name="listed" type="checkbox" checked style="width:auto"> Show on website</label></div>
 <br><button class="p">Save product</button> <button type="button" onclick="pf.hidden=true">Cancel</button></form>
 <div class="card tw"><table><thead><tr><th>Product</th><th>Price</th><th>Cost</th><th>Stock</th><th></th></tr></thead><tbody id="pt"></tbody></table></div></section>
 
@@ -234,7 +277,7 @@ $("#lf").onsubmit=async e=>{e.preventDefault();const{error}=await sb.auth.signIn
 $("#out").onclick=async()=>{await sb.auth.signOut();location.reload()};
 sb.auth.getSession().then(({data})=>data.session&&enter());
 async function load(){const[a,b]=await Promise.all([sb.from("products").select("*").order("name"),sb.from("sales").select("*,sale_items(*)").order("created_at",{ascending:false}).limit(2000)]);
-if(a.error||b.error)return err(a.error||b.error);P=a.data;S=b.data;rP();rSel();rS();rD();rB()}
+if(a.error||b.error)return err(a.error||b.error);P=a.data;S=b.data;if(P.length&&!("discount_price" in P[0]))msg("Auto-fill needs a one-time database update: run migration-autofill.sql in Supabase > SQL Editor.",1);rP();rSel();rS();rD();rB()}
 // ---------- dashboard
 function from(p){const d=new Date();d.setHours(0,0,0,0);if(p=="week")d.setDate(d.getDate()-6);if(p=="month")d.setDate(1);if(p=="year")d.setMonth(0,1);return p=="all"?new Date(0):d}
 const inPer=()=>S.filter(s=>new Date(s.created_at)>=from($("#per").value));
@@ -271,20 +314,71 @@ $("#per").onchange=rD;
 $("#csv").onclick=()=>{const r=[["Invoice","Date","Customer","Subtotal","Discount","Total","Paid","Method"],...inPer().map(s=>[s.invoice_no,D(s.created_at),s.customer_name||"",s.subtotal,s.discount,s.total,s.paid,s.method])];
 const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([r.map(x=>x.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(",")).join("\n")],{type:"text/csv"}));a.download="sales-report.csv";a.click()};
 // ---------- products
-function rP(){const q=$("#pq").value.toLowerCase();$("#pt").innerHTML=P.filter(p=>[p.name,p.brand,p.model,p.sku,p.imei,p.barcode].join(" ").toLowerCase().includes(q)).map(p=>`<tr><td>${E(p.name)}<br><small>${E(p.category)}${p.imei?" · IMEI "+E(p.imei):""}${p.listed?"":" · hidden"}</small></td><td>${M(p.price)}</td><td>${M(p.purchase_price)}</td><td class="${p.qty==0?"out":p.qty<=p.low_stock?"low":""}">${p.qty}</td><td><button onclick="ed('${p.id}')">Edit</button> <button onclick="adj('${p.id}')">Stock</button> <button class="d" onclick="del('${p.id}')">Delete</button></td></tr>`).join("")||"<tr><td>No products yet. Press “Add product”.</td></tr>"}
-function rSel(){$("#bp").innerHTML=P.map(p=>`<option value="${p.id}">${E(p.name)}</option>`).join("");$("#sp").innerHTML=P.filter(p=>p.qty>0).map(p=>`<option value="${p.id}">${E(p.name)} (${p.qty} left, ${M(p.price)})</option>`).join("")}
-$("#addp").onclick=()=>{pf.reset();pf.pid.value="";pf.qty.parentElement.hidden=false;pf.hidden=false;pf.name.focus()};
-function ed(id){const p=P.find(x=>x.id==id);pf.reset();for(const k in p){const el=pf.elements[k];if(el&&el.type!="file"&&el.type!="checkbox")el.value=p[k]??""}pf.listed.checked=p.listed;pf.pid.value=id;pf.qty.parentElement.hidden=true;pf.hidden=false;pf.scrollIntoView()}
+function rP(){const q=$("#pq").value.toLowerCase();$("#pt").innerHTML=P.filter(p=>[p.name,p.brand,p.model,p.sku,p.imei,p.barcode].join(" ").toLowerCase().includes(q)).map(p=>`<tr><td>${E(p.name)}<br><small>${E(p.category)}${p.imei?" · IMEI "+E(p.imei):""}${p.listed?"":" · hidden"}</small></td><td>${p.discount_price!=null?`<span class="was">${M(p.price)}</span><br><span class="pr2">${M(p.discount_price)}</span>`:M(p.price)}</td><td>${M(p.purchase_price)}</td><td class="${p.qty==0?"out":p.qty<=p.low_stock?"low":""}">${p.qty}</td><td><button onclick="ed('${p.id}')">Edit</button> <button onclick="adj('${p.id}')">Stock</button> <button class="d" onclick="del('${p.id}')">Delete</button></td></tr>`).join("")||"<tr><td>No products yet. Press “Add product”.</td></tr>"}
+const eff=p=>p.discount_price!=null&&p.discount_price!==""?+p.discount_price:+p.price;
+function rSel(){$("#bp").innerHTML=P.map(p=>`<option value="${p.id}">${E(p.name)}</option>`).join("");$("#sp").innerHTML=P.filter(p=>p.qty>0).map(p=>`<option value="${p.id}">${E(p.name)} (${p.qty} left, ${M(eff(p))})</option>`).join("")}
+$("#addp").onclick=()=>{pf.reset();pf.pid.value="";pf.image_credit.value="";pf.qty.parentElement.hidden=false;img={cur:"",pick:"",credit:"",rm:false};rPv();pf.hidden=false;pf.name.focus()};
+function ed(id){const p=P.find(x=>x.id==id);pf.reset();for(const k in p){const el=pf.elements[k];if(el&&el.type!="file"&&el.type!="checkbox")el.value=p[k]??""}pf.listed.checked=p.listed;pf.pid.value=id;pf.qty.parentElement.hidden=true;img={cur:p.image_url||"",pick:"",credit:p.image_credit||"",rm:false};rPv();pf.hidden=false;pf.scrollIntoView()}
 pf.onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;try{const f=new FormData(pf),r={};for(const[k,v]of f.entries())if(k!="img")r[k]=v;
-const id=r.pid;delete r.pid;["price","purchase_price","low_stock","qty"].forEach(k=>r[k]=Number(r[k]||0));["sku","barcode","imei","brand","model"].forEach(k=>r[k]=r[k]||null);r.listed=pf.listed.checked;if(id)delete r.qty;
-let file=f.get("img");if(file&&file.size){if(file.size>15e6)throw Error("Photo is too large. Please choose one under 15 MB.");file=await shrink(file);const path=crypto.randomUUID()+"."+(file.type=="image/jpeg"?"jpg":(file.name.split(".").pop()||"jpg").toLowerCase());const u=await sb.storage.from("product-images").upload(path,file);if(u.error)throw u.error;r.image_url=sb.storage.from("product-images").getPublicUrl(path).data.publicUrl}
-const{error}=await(id?sb.from("products").update(r).eq("id",id):sb.from("products").insert(r));if(error)throw error;msg("Product saved.");pf.hidden=true;await load()}catch(x){err(x.code=="23505"?Error("That SKU already exists."):x)}b.disabled=false};
+const id=r.pid;delete r.pid;["price","purchase_price","low_stock","qty"].forEach(k=>r[k]=Number(r[k]||0));["sku","barcode","imei","brand","model","colors","image_credit"].forEach(k=>r[k]=String(r[k]||"").trim()||null);r.listed=pf.listed.checked;if(id)delete r.qty;
+r.discount_price=String(f.get("discount_price")||"").trim()===""?null:Number(f.get("discount_price"));
+if(r.discount_price!==null&&(!(r.discount_price>=0)||r.discount_price>r.price))throw Error("Discount price must be between 0 and the selling price.");
+const dup=findDup(r.name,r.model,id);if(dup&&dup.kind=="same")throw Error(`“${dup.p.name}” is already in your products. Edit that one instead.`);
+if(dup&&dup.kind=="model"&&!confirm(`You already have “${dup.p.name}” with the same model number. Save this as a separate product (for example a different RAM/storage)?`)){b.disabled=false;return}
+let file=f.get("img");
+if(file&&file.size){if(file.size>15e6)throw Error("Photo is too large. Please choose one under 15 MB.");file=await shrink(file);r.image_url=await up(file);r.image_credit=null}
+else if(img.pick){const blob=await getRemote(img.pick);file=await shrink(new File([blob],"photo."+(blob.type=="image/png"?"png":"jpg"),{type:blob.type}));r.image_url=await up(file);r.image_credit=img.credit||null}
+else if(img.rm){r.image_url=null;r.image_credit=null}
+else if(id){delete r.image_credit}
+const{error}=await(id?sb.from("products").update(r).eq("id",id):sb.from("products").insert(r));if(error)throw error;msg("Product saved.");pf.hidden=true;img={cur:"",pick:"",credit:"",rm:false};await load()}catch(x){err(dupErr(x))}b.disabled=false};
+async function up(file){const path=crypto.randomUUID()+"."+(file.type=="image/jpeg"?"jpg":file.type=="image/png"?"png":file.type=="image/webp"?"webp":(file.name.split(".").pop()||"jpg").toLowerCase());const u=await sb.storage.from("product-images").upload(path,file,{contentType:file.type||undefined});if(u.error)throw u.error;return sb.storage.from("product-images").getPublicUrl(path).data.publicUrl}
+function dupErr(x){const t=String((x&&(x.message||""))+" "+(x&&x.details||""));if(x&&x.code=="23505")return Error(/dedupe/i.test(t)?"A product with this name already exists.":"That SKU already exists.");if(x&&x.code=="23514"&&/discount/i.test(t))return Error("Discount price cannot be higher than the selling price.");return x}
 // Shrinks big phone photos to at most 1000 px (white background) so product pages load fast. Falls back to the original photo on any problem.
 async function shrink(file){try{const bmp=await createImageBitmap(file),k=Math.min(1,1000/Math.max(bmp.width,bmp.height));
 const c=document.createElement("canvas");c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(bmp,0,0,c.width,c.height);if(bmp.close)bmp.close();
 const b=await new Promise(r=>c.toBlob(r,"image/jpeg",.85));return b&&b.size<file.size?new File([b],"photo.jpg",{type:"image/jpeg"}):file}catch(e){return file}}
 async function del(id){if(!confirm("Delete this product?"))return;const{error}=await sb.from("products").delete().eq("id",id);if(error)return msg(error.code=="23503"?"This product has sales or purchase history, so it cannot be deleted. Untick “Show on website” instead.":error.message,1);msg("Product deleted.");load()}
 async function adj(id){const p=P.find(x=>x.id==id),n=prompt(`New stock count for ${p.name} (now ${p.qty}):`);if(n===null)return;const r=prompt("Reason for this correction (required):");if(r===null)return;const{error}=await sb.rpc("adjust_stock",{p_product:id,p_qty:parseInt(n),p_reason:r});if(error)return err(error);msg("Stock updated.");load()}
+
+// ---------- auto-fill (AI search). Keys live on the server (Edge Function), never in this page.
+let img={cur:"",pick:"",credit:"",rm:false},AF=null,afSel=-1;
+const FN=()=>CFG.url.replace(/\/+$/,"")+"/functions/v1/product-lookup";
+async function fnCall(body,asBlob){const{data:{session}}=await sb.auth.getSession();if(!session)throw Error("Please log in again.");
+let r;try{r=await fetch(FN(),{method:"POST",headers:{"Content-Type":"application/json",apikey:CFG.key,Authorization:"Bearer "+session.access_token},body:JSON.stringify(body)})}catch(e){throw Error("Could not reach the auto-fill service. Check your internet and that the product-lookup function is deployed.")}
+if(!r.ok){let m="";try{m=(await r.json()).error}catch(e){}if(!m&&r.status==404)m="The auto-fill service is not set up yet (deploy the product-lookup function).";throw Error(m||"Auto-fill failed ("+r.status+").")}
+return asBlob?r.blob():r.json()}
+async function getRemote(url){return fnCall({action:"image",url},true)}
+const nk=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"");
+// Duplicate check: "same" = same name (blocked), "model" = same brand+model number (asks you to confirm)
+function findDup(name,model,selfId){const n=nk(name),m=nk(model);
+const same=P.find(p=>p.id!=selfId&&n&&nk(p.name)==n);if(same)return{kind:"same",p:same};
+const mod=m.length>=4&&P.find(p=>p.id!=selfId&&nk(p.model)==m);if(mod)return{kind:"model",p:mod};
+const loose=n.length>=6&&P.find(p=>{if(p.id==selfId)return false;const k=nk(p.name);return k.length>=6&&(k.includes(n)||n.includes(k))&&Math.abs(k.length-n.length)<=4});if(loose)return{kind:"model",p:loose};return null}
+function rPv(){const src=img.pick||(!img.rm&&img.cur)||"";$("#pv").innerHTML=(src?`<img src="${E(src)}" alt="Product photo" referrerpolicy="no-referrer">`:`<div class="pv-none">No photo</div>`)+`<div>${src?`<button type="button" id="pvx" class="d">Remove photo</button><small>${img.pick?"Selected from search. It is copied into your own storage when you save.":"Current photo. Upload another below to replace it."}</small>`:`<small>No photo yet. Choose one from the search results or upload your own.</small>`}</div>`;
+const x=$("#pvx");if(x)x.onclick=()=>{img.pick="";img.credit="";img.rm=true;rPv();drawImgs()}}
+function drawImgs(){document.querySelectorAll(".af-im").forEach((b,i)=>b.classList.toggle("on",i==afSel))}
+function afStatus(t,cls){$("#afs").innerHTML=t?`<div class="af-st ${cls||""}">${E(t)}</div>`:""}
+$("#af").onsubmit=async e=>{e.preventDefault();const q=$("#afq").value.trim();if(q.length<3)return afStatus("Type at least 3 letters of the product name.","bad");
+const b=$("#afb");b.disabled=true;$("#afr").innerHTML="";afStatus("Searching the web… this can take up to 20 seconds.","wait");AF=null;afSel=-1;
+try{const d=await fnCall({action:"search",query:q});AF=d;afStatus("");showAF()}catch(x){afStatus(x.message||"Search failed.","bad")}b.disabled=false};
+function showAF(){const d=AF,p=d.product,dup=findDup(p.name,p.model),im=d.images||[];
+const rows=[["Name",p.name],["Brand",p.brand],["Model",p.model],["Category",p.category],["RAM",p.ram],["Storage",p.storage],["Display",p.display],["Camera",p.camera],["Battery",p.battery],["Colours",(p.colors||[]).join(", ")]].filter(r=>r[1]);
+$("#afr").innerHTML=`<div><span class="af-conf ${E(p.confidence)}">Match confidence: ${E(p.confidence)}</span> <span class="af-note">AI-collected. Please check before saving.</span></div>
+<div class="af-sum">${rows.map(r=>`<div><span>${r[0]}</span>${E(r[1])}</div>`).join("")}</div>
+${p.description?`<p class="af-note">${E(p.description)}</p>`:""}
+${dup?`<div class="af-dup ${dup.kind=="same"?"":"soft"}"><b>${dup.kind=="same"?"Already in your shop:":"Similar product in your shop:"}</b> ${E(dup.p.name)} (${dup.p.qty} in stock, ${M(dup.p.price)})<br>${dup.kind=="same"?"Add stock or edit it instead of creating a duplicate.":"If this is a different variant, continue and give it a distinct name."}<br><button type="button" id="afe">Open existing product</button></div>`:""}
+${(d.sources||[]).length?`<div class="af-src">Sources: ${d.sources.map(s=>`<a href="${E(s.url)}" target="_blank" rel="noopener noreferrer">${E(s.title)}</a>`).join("")}</div>`:""}
+<h2 style="margin-top:12px">Choose a photo<small>openly licensed sources</small></h2>
+${im.length?`<div class="af-imgs">${im.map((m,i)=>`<button type="button" class="af-im" data-i="${i}" title="${E(m.title)}, ${E(m.license)}"><img loading="lazy" referrerpolicy="no-referrer" src="${E(m.thumb)}" alt="${E(m.title)}"><small>${E(m.license)}</small></button>`).join("")}</div><p class="af-note">Photos may differ slightly from the exact model or colour. You can also upload your own photo in the next step.</p>`:`<p class="af-note">No suitable free photo was found. You can upload your own photo in the next step.</p>`}
+<button type="button" class="p" id="afu"${dup&&dup.kind=="same"?" disabled":""}>Use this information</button>`;
+document.querySelectorAll(".af-im").forEach(b=>b.onclick=()=>{afSel=+b.dataset.i==afSel?-1:+b.dataset.i;drawImgs()});
+const eb=$("#afe");if(eb)eb.onclick=()=>ed(dup.p.id);$("#afu").onclick=useAF}
+function useAF(){const d=AF,p=d.product,m=afSel>=0?d.images[afSel]:null;
+pf.reset();pf.pid.value="";pf.qty.parentElement.hidden=false;
+pf.name.value=p.name;pf.brand.value=p.brand||"";pf.model.value=p.model||"";pf.category.value=p.category;pf.specs.value=p.specs||"";pf.description.value=p.description||"";pf.colors.value=(p.colors||[]).join(", ");
+pf.purchase_price.value="";pf.price.value="";pf.discount_price.value="";pf.qty.value=0;pf.image_credit.value="";
+img={cur:"",pick:m?m.full:"",credit:m?m.credit:"",rm:false};rPv();pf.hidden=false;pf.scrollIntoView({behavior:"smooth"});pf.price.focus();
+msg("Details filled in. Now enter your selling price, purchase price and stock.")}
 // ---------- purchases
 $("#bf").onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;const f=Object.fromEntries(new FormData(e.target));
 const{error}=await sb.rpc("record_purchase",{p_product:f.product,p_supplier:f.supplier,p_phone:f.phone,p_qty:parseInt(f.qty),p_cost:+f.cost,p_date:f.date,p_key:bkey});b.disabled=false;if(error)return err(error);
@@ -292,8 +386,8 @@ bkey=crypto.randomUUID();e.target.reset();$("#bd").valueAsDate=new Date();msg("P
 async function rB(){const{data}=await sb.from("purchases").select("*,products(name),suppliers(name,phone)").order("created_at",{ascending:false}).limit(40);
 $("#bt").innerHTML=(data||[]).map(r=>`<tr><td>${D(r.purchase_date)}</td><td>${E(r.products&&r.products.name)}</td><td>${E(r.suppliers?r.suppliers.name+" "+(r.suppliers.phone||""):"")}</td><td>${r.qty}</td><td>${M(r.total)}</td></tr>`).join("")}
 // ---------- sale
-function sub(){return cart.reduce((a,c)=>a+c.q*P.find(p=>p.id==c.id).price,0)}
-function rC(){const s=sub(),d=+$("#disc").value||0;$("#cart").innerHTML=cart.map((c,i)=>{const p=P.find(x=>x.id==c.id);return`<tr><td>${E(p.name)}</td><td>${c.q} × ${M(p.price)}</td><td>${M(c.q*p.price)}</td><td><button class="d" onclick="cart.splice(${i},1);rC()">Remove</button></td></tr>`}).join("");$("#sum").textContent=`Subtotal ${M(s)} − discount ${M(d)} = ${M(s-d)}`}
+function sub(){return cart.reduce((a,c)=>a+c.q*eff(P.find(p=>p.id==c.id)),0)}
+function rC(){const s=sub(),d=+$("#disc").value||0;$("#cart").innerHTML=cart.map((c,i)=>{const p=P.find(x=>x.id==c.id);return`<tr><td>${E(p.name)}</td><td>${c.q} × ${M(eff(p))}</td><td>${M(c.q*eff(p))}</td><td><button class="d" onclick="cart.splice(${i},1);rC()">Remove</button></td></tr>`}).join("");$("#sum").textContent=`Subtotal ${M(s)} − discount ${M(d)} = ${M(s-d)}`}
 $("#disc").oninput=rC;
 $("#add").onclick=()=>{const p=P.find(x=>x.id==$("#sp").value),q=parseInt($("#sq").value);if(!p||!(q>=1))return msg("Choose a product and a quantity.",1);const c=cart.find(x=>x.id==p.id),n=(c?c.q:0)+q;if(n>p.qty)return msg(`Only ${p.qty} of ${p.name} in stock.`,1);c?c.q=n:cart.push({id:p.id,q});rC()};
 $("#sell").onclick=async e=>{const b=e.target;if(!cart.length)return msg("Add at least one item.",1);b.disabled=true;const s=sub(),d=+$("#disc").value||0,pd=$("#paid").value===""?s-d:+$("#paid").value;

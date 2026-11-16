@@ -116,6 +116,10 @@ section[id]{scroll-margin-top:12px}
 .tag{font-size:.8rem;font-weight:600}.in{color:var(--ok)}.no{color:var(--bad)}
 .bd .btn{margin-top:auto;width:100%;font-size:.9rem;min-height:42px}
 .bd .btn+.btn{margin-top:6px}
+.was{text-decoration:line-through;color:var(--mut);font-weight:500;font-size:.72em;margin-left:6px}
+.off{display:inline-block;background:#fff3c4;color:#7a5b00;font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:999px;align-self:flex-start}
+.cl{font-size:.78rem;color:var(--mut)}
+.cr{font-size:.65rem;color:#9aa0aa;overflow-wrap:anywhere}
 
 /* promos */
 .promos{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -384,6 +388,8 @@ $("#q").oninput = draw;
 $("#q").form.onsubmit = event => { event.preventDefault(); $("#shop").scrollIntoView(); };
 $("#av").onchange = draw;
 
+const eff = p => (p.discount_price != null && Number(p.discount_price) < Number(p.price)) ? Number(p.discount_price) : Number(p.price);
+const inr = n => "₹" + Number(n).toLocaleString("en-IN");
 const PLACEHOLDER = `<svg class="i ph"><use href="#i-phone"/></svg>`;
 
 function draw() {
@@ -408,14 +414,17 @@ function draw() {
       <div class="bd">
         <h3>${E(product.name)}</h3>
         <div class="sp">${E(product.specs || product.description || "")}</div>
-        <div class="pr">₹${Number(product.price).toLocaleString("en-IN")}</div>
+        ${product.colors ? `<div class="cl">Colours: ${E(product.colors)}</div>` : ""}
+        <div class="pr">${inr(eff(product))}${eff(product) < Number(product.price) ? `<span class="was">${inr(product.price)}</span>` : ""}</div>
+        ${eff(product) < Number(product.price) ? `<span class="off">Offer price</span>` : ""}
         <div class="tag ${product.in_stock ? "in" : "no"}">
           ${product.in_stock ? "● In stock" : "● Sold out"}
         </div>
         <a class="btn" target="_blank" rel="noopener"
-           href="${wa(`Hello, I am interested in ${product.name} (₹${product.price}). Is it available?`)}">
+           href="${wa(`Hello, I am interested in ${product.name} (${inr(eff(product))}). Is it available?`)}">
           Ask on WhatsApp
         </a>
+        ${product.image_credit ? `<div class="cr">Photo: ${E(product.image_credit)}</div>` : ""}
       </div>
     </article>
   `).join("") || "<p>No products match. Try another search, or message us on WhatsApp.</p>";
@@ -430,7 +439,7 @@ function renderHero() {
     <div class="hv-card ${spots[index]}">
       <div class="hv-im"><img loading="lazy" decoding="async" width="300" height="300" src="${E(product.image_url)}" alt=""></div>
       <b>${E(product.name)}</b>
-      <span>₹${Number(product.price).toLocaleString("en-IN")}</span>
+      <span>${inr(eff(product))}</span>
     </div>`).join("");
 }
 
