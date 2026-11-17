@@ -277,7 +277,7 @@ $("#lf").onsubmit=async e=>{e.preventDefault();const{error}=await sb.auth.signIn
 $("#out").onclick=async()=>{await sb.auth.signOut();location.reload()};
 sb.auth.getSession().then(({data})=>data.session&&enter());
 async function load(){const[a,b]=await Promise.all([sb.from("products").select("*").order("name"),sb.from("sales").select("*,sale_items(*)").order("created_at",{ascending:false}).limit(2000)]);
-if(a.error||b.error)return err(a.error||b.error);P=a.data;S=b.data;if(P.length&&!("discount_price" in P[0]))msg("Auto-fill needs a one-time database update: run migration-autofill.sql in Supabase > SQL Editor.",1);rP();rSel();rS();rD();rB()}
+if(a.error||b.error)return err(a.error||b.error);P=a.data||[];S=(b.data||[]).map(s=>({...s,sale_items:s.sale_items||[]}));cart=cart.filter(c=>P.some(p=>p.id==c.id));if(P.length&&!("discount_price" in P[0]))msg("Auto-fill needs a one-time database update: run migration-autofill.sql in Supabase > SQL Editor.",1);rP();rSel();rS();rD();rB();rC()}
 // ---------- dashboard
 function from(p){const d=new Date();d.setHours(0,0,0,0);if(p=="week")d.setDate(d.getDate()-6);if(p=="month")d.setDate(1);if(p=="year")d.setMonth(0,1);return p=="all"?new Date(0):d}
 const inPer=()=>S.filter(s=>new Date(s.created_at)>=from($("#per").value));
@@ -318,7 +318,7 @@ function rP(){const q=$("#pq").value.toLowerCase();$("#pt").innerHTML=P.filter(p
 const eff=p=>p.discount_price!=null&&p.discount_price!==""?+p.discount_price:+p.price;
 function rSel(){$("#bp").innerHTML=P.map(p=>`<option value="${p.id}">${E(p.name)}</option>`).join("");$("#sp").innerHTML=P.filter(p=>p.qty>0).map(p=>`<option value="${p.id}">${E(p.name)} (${p.qty} left, ${M(eff(p))})</option>`).join("")}
 $("#addp").onclick=()=>{pf.reset();pf.pid.value="";pf.image_credit.value="";pf.qty.parentElement.hidden=false;img={cur:"",pick:"",credit:"",rm:false};rPv();pf.hidden=false;pf.name.focus()};
-function ed(id){const p=P.find(x=>x.id==id);pf.reset();for(const k in p){const el=pf.elements[k];if(el&&el.type!="file"&&el.type!="checkbox")el.value=p[k]??""}pf.listed.checked=p.listed;pf.pid.value=id;pf.qty.parentElement.hidden=true;img={cur:p.image_url||"",pick:"",credit:p.image_credit||"",rm:false};rPv();pf.hidden=false;pf.scrollIntoView()}
+function ed(id){const p=P.find(x=>x.id==id);if(!p){msg("That product is no longer in the list. Refreshing.",1);return load()}pf.reset();for(const k in p){const el=pf.elements[k];if(el&&el.type!="file"&&el.type!="checkbox")el.value=p[k]??""}pf.listed.checked=p.listed;pf.pid.value=id;pf.qty.parentElement.hidden=true;img={cur:p.image_url||"",pick:"",credit:p.image_credit||"",rm:false};rPv();pf.hidden=false;pf.scrollIntoView()}
 pf.onsubmit=async e=>{e.preventDefault();const b=e.submitter;b.disabled=true;try{const f=new FormData(pf),r={};for(const[k,v]of f.entries())if(k!="img")r[k]=v;
 const id=r.pid;delete r.pid;["price","purchase_price","low_stock","qty"].forEach(k=>r[k]=Number(r[k]||0));["sku","barcode","imei","brand","model","colors","image_credit"].forEach(k=>r[k]=String(r[k]||"").trim()||null);r.listed=pf.listed.checked;if(id)delete r.qty;
 r.discount_price=String(f.get("discount_price")||"").trim()===""?null:Number(f.get("discount_price"));
@@ -338,7 +338,7 @@ async function shrink(file){try{const bmp=await createImageBitmap(file),k=Math.m
 const c=document.createElement("canvas");c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);const x=c.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,c.width,c.height);x.drawImage(bmp,0,0,c.width,c.height);if(bmp.close)bmp.close();
 const b=await new Promise(r=>c.toBlob(r,"image/jpeg",.85));return b&&b.size<file.size?new File([b],"photo.jpg",{type:"image/jpeg"}):file}catch(e){return file}}
 async function del(id){if(!confirm("Delete this product?"))return;const{error}=await sb.from("products").delete().eq("id",id);if(error)return msg(error.code=="23503"?"This product has sales or purchase history, so it cannot be deleted. Untick “Show on website” instead.":error.message,1);msg("Product deleted.");load()}
-async function adj(id){const p=P.find(x=>x.id==id),n=prompt(`New stock count for ${p.name} (now ${p.qty}):`);if(n===null)return;const r=prompt("Reason for this correction (required):");if(r===null)return;const{error}=await sb.rpc("adjust_stock",{p_product:id,p_qty:parseInt(n),p_reason:r});if(error)return err(error);msg("Stock updated.");load()}
+async function adj(id){const p=P.find(x=>x.id==id);if(!p){msg("That product is no longer in the list. Refreshing.",1);return load()}const n=prompt(`New stock count for ${p.name} (now ${p.qty}):`);if(n===null)return;const r=prompt("Reason for this correction (required):");if(r===null)return;const{error}=await sb.rpc("adjust_stock",{p_product:id,p_qty:parseInt(n),p_reason:r});if(error)return err(error);msg("Stock updated.");load()}
 
 // ---------- auto-fill (AI search). Keys live on the server (Edge Function), never in this page.
 let img={cur:"",pick:"",credit:"",rm:false},AF=null,afSel=-1;
@@ -360,7 +360,7 @@ function drawImgs(){document.querySelectorAll(".af-im").forEach((b,i)=>b.classLi
 function afStatus(t,cls){$("#afs").innerHTML=t?`<div class="af-st ${cls||""}">${E(t)}</div>`:""}
 $("#af").onsubmit=async e=>{e.preventDefault();const q=$("#afq").value.trim();if(q.length<3)return afStatus("Type at least 3 letters of the product name.","bad");
 const b=$("#afb");b.disabled=true;$("#afr").innerHTML="";afStatus("Searching the web… this can take up to 20 seconds.","wait");AF=null;afSel=-1;
-try{const d=await fnCall({action:"search",query:q});AF=d;afStatus("");showAF()}catch(x){afStatus(x.message||"Search failed.","bad")}b.disabled=false};
+try{const d=await fnCall({action:"search",query:q});if(!d||typeof d!="object"||!d.product||!d.product.name)throw Error("The auto-fill service sent an unexpected reply. Redeploy the latest product-lookup function (index.ts) in Supabase and try again.");AF=d;afStatus("");showAF()}catch(x){afStatus(x.message||"Search failed.","bad")}b.disabled=false};
 function showAF(){const d=AF,p=d.product,dup=findDup(p.name,p.model),im=d.images||[];
 const rows=[["Name",p.name],["Brand",p.brand],["Model",p.model],["Category",p.category],["RAM",p.ram],["Storage",p.storage],["Display",p.display],["Camera",p.camera],["Battery",p.battery],["Colours",(p.colors||[]).join(", ")]].filter(r=>r[1]);
 $("#afr").innerHTML=`<div><span class="af-conf ${E(p.confidence)}">Match confidence: ${E(p.confidence)}</span> <span class="af-note">AI-collected. Please check before saving.</span></div>
