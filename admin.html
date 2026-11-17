@@ -230,7 +230,7 @@ button,select,input:not([type=checkbox]):not([type=hidden]){min-height:44px}
 <section id="t-prod" hidden>
 <div class="card af"><h2>Auto-fill from product name <span class="tagai">AI</span></h2>
 <form id="af" class="af-row"><input id="afq" placeholder="e.g. Samsung Galaxy M35 5G" maxlength="120" aria-label="Product name, brand or model" autocomplete="off"><button class="p" id="afb">Find product</button></form>
-<p class="af-hint">Type a name, brand or model number. Details come from the web and photos from openly licensed sources. Always check them, then add your own prices and stock. Nothing is saved until you press Save product.</p>
+<p class="af-hint">Type a name, brand or model number. Details come from the web and photos from openly licensed sources. Always check them, then add your own prices and stock. Nothing is saved until you press Save product. <button type="button" id="aft">Test connection</button></p>
 <div id="afs" role="status" aria-live="polite"></div><div id="afr" class="af-res"></div></div>
 <div class="f"><input id="pq" placeholder="Search name, model, SKU, IMEI" oninput="rP()"><div><button class="p" id="addp">+ Add product</button></div></div>
 <form id="pf" class="card" hidden><input type="hidden" name="pid"><input type="hidden" name="image_credit"><div class="f">
@@ -345,8 +345,9 @@ let img={cur:"",pick:"",credit:"",rm:false},AF=null,afSel=-1;
 const FN=()=>CFG.url.replace(/\/+$/,"")+"/functions/v1/product-lookup";
 async function fnCall(body,asBlob){const{data:{session}}=await sb.auth.getSession();if(!session)throw Error("Please log in again.");
 let r;try{r=await fetch(FN(),{method:"POST",headers:{"Content-Type":"application/json",apikey:CFG.key,Authorization:"Bearer "+session.access_token},body:JSON.stringify(body)})}catch(e){throw Error("Could not reach the auto-fill service. Check your internet and that the product-lookup function is deployed.")}
-if(!r.ok){let m="";try{m=(await r.json()).error}catch(e){}if(!m&&r.status==404)m="The auto-fill service is not set up yet (deploy the product-lookup function).";throw Error(m||"Auto-fill failed ("+r.status+").")}
-return asBlob?r.blob():r.json()}
+if(!r.ok){let m="";try{const j=await r.json();m=j.error||j.message||""}catch(e){}if(!m&&r.status==404)m="The auto-fill service is not set up yet (deploy the product-lookup function).";throw Error(m||"Auto-fill failed ("+r.status+").")}
+if(asBlob)return r.blob();
+const t=await r.text();try{return JSON.parse(t)}catch(e){throw Error("The auto-fill service did not return JSON (it sent: "+t.slice(0,80).replace(/\s+/g," ")+"). Paste the latest index.ts into the product-lookup function and Deploy.")}}
 async function getRemote(url){return fnCall({action:"image",url},true)}
 const nk=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"");
 // Duplicate check: "same" = same name (blocked), "model" = same brand+model number (asks you to confirm)
@@ -360,7 +361,8 @@ function drawImgs(){document.querySelectorAll(".af-im").forEach((b,i)=>b.classLi
 function afStatus(t,cls){$("#afs").innerHTML=t?`<div class="af-st ${cls||""}">${E(t)}</div>`:""}
 $("#af").onsubmit=async e=>{e.preventDefault();const q=$("#afq").value.trim();if(q.length<3)return afStatus("Type at least 3 letters of the product name.","bad");
 const b=$("#afb");b.disabled=true;$("#afr").innerHTML="";afStatus("Searching the web… this can take up to 20 seconds.","wait");AF=null;afSel=-1;
-try{const d=await fnCall({action:"search",query:q});if(!d||typeof d!="object"||!d.product||!d.product.name)throw Error("The auto-fill service sent an unexpected reply. Redeploy the latest product-lookup function (index.ts) in Supabase and try again.");AF=d;afStatus("");showAF()}catch(x){afStatus(x.message||"Search failed.","bad")}b.disabled=false};
+try{const d=await fnCall({action:"search",query:q});if(!d||typeof d!="object"||!d.product||!d.product.name)throw Error("The auto-fill service sent an unexpected reply: "+JSON.stringify(d).slice(0,100)+". The deployed function is not the latest index.ts. Use “Test connection”, then redeploy it.");AF=d;afStatus("");showAF()}catch(x){afStatus(x.message||"Search failed.","bad")}b.disabled=false};
+$("#aft").onclick=async()=>{afStatus("Testing connection…","wait");try{const d=await fnCall({action:"ping"});if(!d||d.function!="product-lookup")throw Error("Connected, but this is not the product-lookup code (it replied: "+JSON.stringify(d).slice(0,100)+"). Paste the latest index.ts and Deploy.");afStatus("Connected. Function version "+d.version+". Gemini key: "+(d.gemini_key_set?"set":"MISSING, add the GEMINI_API_KEY secret")+". Model: "+d.gemini_model+".",d.gemini_key_set?"":"bad")}catch(x){afStatus(/Unknown request/.test(x.message)?"The deployed function is an older version. Paste the latest index.ts and Deploy.":x.message,"bad")}};
 function showAF(){const d=AF,p=d.product,dup=findDup(p.name,p.model),im=d.images||[];
 const rows=[["Name",p.name],["Brand",p.brand],["Model",p.model],["Category",p.category],["RAM",p.ram],["Storage",p.storage],["Display",p.display],["Camera",p.camera],["Battery",p.battery],["Colours",(p.colors||[]).join(", ")]].filter(r=>r[1]);
 $("#afr").innerHTML=`<div><span class="af-conf ${E(p.confidence)}">Match confidence: ${E(p.confidence)}</span> <span class="af-note">AI-collected. Please check before saving.</span></div>

@@ -16,6 +16,8 @@ const CORS: Record<string, string> = {
 const UA = "AdityaMobileAutofill/1.0 (shop admin tool)";
 const CATS = ["Mobile Phones", "Accessories", "Electronics"];
 const MAX_IMG = 8_000_000;
+const VERSION = "2026-11-17.2";
+const DEFAULT_MODEL = "gemini-3.5-flash";
 
 const j = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...CORS, "Content-Type": "application/json" } });
@@ -45,12 +47,19 @@ Deno.serve(async (req) => {
     if (ue || !u?.user) return j({ error: "Not logged in." }, 401);
     const { data: isAdmin, error: ae } = await sb.rpc("is_admin");
     if (ae || !isAdmin) return j({ error: "Admins only." }, 403);
-    if (limited(u.user.id)) return j({ error: "Too many searches. Wait a few minutes and try again." }, 429);
 
     const body = await req.json().catch(() => ({}));
+    // Connection test used by the "Test connection" button in admin.html (not rate limited, calls no external service)
+    if (body.action === "ping") {
+      return j({
+        ok: true, function: "product-lookup", version: VERSION,
+        gemini_key_set: !!Deno.env.get("GEMINI_API_KEY"), gemini_model: Deno.env.get("GEMINI_MODEL") ?? DEFAULT_MODEL,
+      });
+    }
+    if (limited(u.user.id)) return j({ error: "Too many searches. Wait a few minutes and try again." }, 429);
     if (body.action === "search") return await search(String(body.query ?? ""));
     if (body.action === "image") return await image(String(body.url ?? ""));
-    return j({ error: "Unknown request." }, 400);
+    return j({ error: "Unknown request. Expected action \"search\", \"image\" or \"ping\"." }, 400);
   } catch (e) {
     console.error(e);
     return j({ error: "Something went wrong on the server. Please try again." }, 500);
@@ -78,7 +87,7 @@ async function search(raw: string) {
   } catch (e) {
     console.error("image search failed", e);
   }
-  return j({ product: info.product, sources: info.sources, images });
+  return j({ ok: true, version: VERSION, product: info.product, sources: info.sources, images });
 }
 
 const str = (v: unknown, n = 300) =>
@@ -94,7 +103,7 @@ function parseJson(text: string): any | null {
 async function lookupInfo(q: string) {
   const key = Deno.env.get("GEMINI_API_KEY");
   if (!key) throw new Error("Auto-fill is not configured yet: add the GEMINI_API_KEY secret in Supabase.");
-  const model = Deno.env.get("GEMINI_MODEL") ?? "gemini-3.5-flash";
+  const gemini = Deno.env.get("GEMINI_MODEL") ?? DEFAULT_MODEL;
 
   const prompt = `You are a product-data assistant for a mobile and electronics shop in India.
 Use web search to find factual details for this product: "${q}".
@@ -110,7 +119,7 @@ Return ONLY one JSON object, no other text, in this shape:
  "battery": "", "os": "", "colors": [""], "features": [""]}`;
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(gemini)}:generateContent`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-goog-api-key": key },
@@ -123,10 +132,18 @@ Return ONLY one JSON object, no other text, in this shape:
   );
   if (res.status === 429) throw new Error("The free AI daily limit is reached. Try again later, or fill the form by hand.");
   if (!res.ok) {
-    console.error("Gemini error", res.status, (await res.text()).slice(0, 500));
-    throw new Error("The AI service did not answer. Check the GEMINI_API_KEY secret and the model name (GEMINI_MODEL).");
+    const raw = (await res.text()).slice(0, 800);
+    console.error("Gemini error", res.status, raw);
+    let detail = "";
+    try { detail = String(JSON.parse(raw)?.error?.message ?? "").slice(0, 160); } catch { /* not JSON */ }
+    if (res.status === 400 && /api key/i.test(detail)) throw new Error("Google rejected the GEMINI_API_KEY. Create a new key in AI Studio and update the secret.");
+    if (res.status === 401 || res.status === 403) throw new Error("Google refused the request (key not allowed or Gemini API not enabled for it). Check the GEMINI_API_KEY secret.");
+    if (res.status === 404) throw new Error("Gemini model not found. Set the GEMINI_MODEL secret to a current Flash model name from AI Studio.");
+    throw new Error(`The AI service returned an error (${res.status}). ${detail}`.trim());
   }
-  const data = await res.json();
+  const data = await res.json().catch(() => null);
+  if (!data) throw new Error("The AI service sent an unreadable reply. Try again.");
+  if (data.promptFeedback?.blockReason) throw new Error("The AI service blocked this search. Try a different product name.");
   const cand = data.candidates?.[0];
   const text = (cand?.content?.parts ?? []).filter((p: any) => !p.thought).map((p: any) => p.text ?? "").join("");
   const p = parseJson(text);
@@ -249,7 +266,11 @@ async function openverse(q: string): Promise<Img[]> {
 // The browser cannot download most web images (CORS), so the server fetches the picked image and hands it back;
 // admin.html then resizes it and uploads it to YOUR Supabase Storage.
 function isPrivateIp(ip: string) {
-  if (ip.includes(":")) return /^(::1|f[cd]|fe80)/i.test(ip) || ip === "::";
+  if (ip.includes(":")) {
+    const m = ip.toLowerCase().match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+    if (m) return isPrivateIp(m[1]);
+    return /^(::1|f[cd]|fe80)/i.test(ip) || ip === "::";
+  }
   const [a, b] = ip.split(".").map(Number);
   return a === 10 || a === 127 || a === 0 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) ||
     (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127);
