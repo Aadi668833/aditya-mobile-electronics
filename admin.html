@@ -264,6 +264,15 @@ button,select,input:not([type=checkbox]):not([type=hidden]){min-height:44px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
 <script>
+/* Login guard: if the Supabase library or config.js did not load, say so instead of leaving a dead login form. */
+(function(){var lf=document.getElementById("lf"),why="";
+if(!window.supabase||!window.supabase.createClient)why="The Supabase library could not be loaded (network, ad-blocker or a Content-Security-Policy is blocking cdn.jsdelivr.net). Check the browser console.";
+else if(!window.CFG||!CFG.url||!CFG.key)why="config.js is missing or incomplete. It must define CFG.url and CFG.key.";
+if(!why||!lf)return;
+function show(){var m=document.getElementById("msg");m.textContent=why;m.className="bad";m.hidden=false}
+lf.addEventListener("submit",function(e){e.preventDefault();show()});show()})();
+</script>
+<script>
 const sb=supabase.createClient(CFG.url,CFG.key),$=s=>document.querySelector(s),pf=$("#pf"),M=n=>"₹"+Number(n||0).toLocaleString("en-IN"),D=d=>new Date(d).toLocaleDateString("en-IN"),
 E=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let P=[],S=[],cart=[],key=crypto.randomUUID(),bkey=crypto.randomUUID();
@@ -272,10 +281,21 @@ const err=e=>msg((e&&e.message)||"Something went wrong. Please try again.",1);
 const TITLES={dash:["Welcome back!","Here is how the shop is doing."],prod:["Products","Add, edit and manage your stock."],buy:["Purchases","Record new stock you bought."],sell:["New sale","Make a bill for a customer."],sales:["Sales & bills","Past sales, invoices and payments."]};
 function tab(n){document.querySelectorAll("main>section").forEach(s=>s.hidden=s.id!="t-"+n);document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.t==n));$("#ptitle").textContent=TITLES[n][0];$("#psub").textContent=TITLES[n][1];scrollTo(0,0)}
 document.querySelector("nav").onclick=e=>{const b=e.target.closest("[data-t]");if(b)tab(b.dataset.t)};
-async function enter(){const{data,error}=await sb.rpc("is_admin");if(error||!data){await sb.auth.signOut();return false}$("#login").hidden=true;$("#app").hidden=false;$("#bd").valueAsDate=new Date();await load();tab("dash");return true}
-$("#lf").onsubmit=async e=>{e.preventDefault();const{error}=await sb.auth.signInWithPassword({email:$("#em").value.trim(),password:$("#pw").value});if(error)return msg("Wrong email or password.",1);if(!await enter())msg("This account does not have admin access.",1)};
+function authMsg(e){const m=String(e&&e.message||""),st=e&&e.status;
+if((e&&e.code==="invalid_credentials")||/invalid login credentials/i.test(m))return"Wrong email or password.";
+if(/email not confirmed/i.test(m))return"This email is not confirmed yet. Confirm it in Supabase (Authentication > Users).";
+if(st===429||/rate limit|too many/i.test(m))return"Too many login attempts. Wait a few minutes and try again.";
+if(st===401||/invalid api key/i.test(m))return"Supabase rejected the key in config.js. Check CFG.key.";
+if(!st||st>=500||/fetch|network/i.test(m))return"Could not reach Supabase. Check your internet and that the project is not paused.";
+return"Login failed: "+m}
+/* returns true = admin, false = signed in but not an admin, null = admin check could not run (message already shown) */
+async function enter(){const{data,error}=await sb.rpc("is_admin");
+if(error){msg("Could not check admin access: "+(error.message||"unknown error")+". The admin check (is_admin) may be missing, not allowed, or Supabase is unreachable.",1);return null}
+if(!data){await sb.auth.signOut();return false}
+$("#login").hidden=true;$("#app").hidden=false;$("#bd").valueAsDate=new Date();try{await load()}catch(x){err(x)}tab("dash");return true}
+$("#lf").onsubmit=async e=>{e.preventDefault();let r;try{r=await sb.auth.signInWithPassword({email:$("#em").value.trim(),password:$("#pw").value})}catch(x){return msg(authMsg(x),1)}if(r.error)return msg(authMsg(r.error),1);if(await enter()===false)msg("This account does not have admin access.",1)};
 $("#out").onclick=async()=>{await sb.auth.signOut();location.reload()};
-sb.auth.getSession().then(({data})=>data.session&&enter());
+sb.auth.getSession().then(({data})=>data.session&&enter()).catch(x=>console.error("session restore failed",x));
 async function load(){const[a,b]=await Promise.all([sb.from("products").select("*").order("name"),sb.from("sales").select("*,sale_items(*)").order("created_at",{ascending:false}).limit(2000)]);
 if(a.error||b.error)return err(a.error||b.error);P=a.data||[];S=(b.data||[]).map(s=>({...s,sale_items:s.sale_items||[]}));cart=cart.filter(c=>P.some(p=>p.id==c.id));if(P.length&&!("discount_price" in P[0]))msg("Auto-fill needs a one-time database update: run migration-autofill.sql in Supabase > SQL Editor.",1);rP();rSel();rS();rD();rB();rC()}
 // ---------- dashboard
